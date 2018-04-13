@@ -62,7 +62,7 @@ np.random.shuffle(mixing)
 labels_dic, label_names, validation_ground_truth = utils_data.parse_devkit_meta(devkit_path)
 # Or you can just do like this
 # define_class = ['apple', 'banana', 'cat', 'dog', 'elephant', 'forg']
-# labels_dic = {k: v for v, k in enumerate(define_class)}
+# labels_dic = {1}
 
 # Preparing the files per group of classes
 print("Creating a validation set ...")
