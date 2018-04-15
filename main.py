@@ -28,6 +28,8 @@ for _ in range(nb_groups * nb_cl):
     files_protoset.append([])
 
 ### Preparing the files for the training/validation ###
+print("Creating training/ validation data, saving to {}".format(save_path))
+print("Data files status: {}".format(utils_data.prepare_files()))
 
 # Random mixing
 print("Mixing the classes and putting them in batches of classes...")
