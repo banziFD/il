@@ -17,7 +17,7 @@ wght_decay = 0.00001        # Weight Decay
 ######### Paths  ##########
 # Working station 
 dataset_path = "E:\dataset\cifar-10-python"
-save_path = "E:\ilex\"
+work_path = "E:\ilex\"
 ###########################
 
 ### Initialization of some variables ###
