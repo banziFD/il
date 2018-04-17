@@ -4,6 +4,7 @@ import glob
 import torch.utils.data
 import torch
 import torchvision.transforms as transforms
+import PIL.Image as Image
 
 def cifar_unpickle(file):
     with open(file, 'rb') as fo:
@@ -30,7 +31,7 @@ def prepare_files(dataset_path, work_path, mixing):
     # (class1, class2... in group2), ()
     files = glob.glob(dataset_path + 'data*') # cifar-10 data are named as data_batch_*
     for i in range(len(mixing)):
-        filename = work_path + 'classgroup_{}'.format(i)
+        filename = work_path + 'group_{}'.format(i)
         target_class = mixing[i]
         labels = []
         images = []
@@ -50,14 +51,23 @@ def prepare_files(dataset_path, work_path, mixing):
 
 class MyDataset(torch.utils.data.Dataset):
     def __init__(self, work_path, nb_groups):
-        self.labels = work_path + 'classgroup_{}'.format(nb_groups) + 'label'
-        self.images = work_path + 'classgroup_{}'.format(nb_groups) + 'class'
+        self.labels = work_path + 'group_{}'.format(nb_groups) + 'label.npy'
+        self.images = work_path + 'group_{}'.format(nb_groups) + 'image.npy'
         self.labels = np.load(self.labels)
         self.images = np.load(self.images)
-
+        self.transform = data_transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406],
+            std=[0.229, 0.224, 0.225])
+             ])
+        
     def __getitem__(self, index):
-        return self.labels[index], self.images[index]
+        label = self.labels[index]
+        image = self.images[index]
+        image = Image.fromarray(image).resize((224, 224), Image.ANTIALIAS)
+        image = self.transform(image)
+        return image, label
     
     def __len__(self):
         assert self.labels.shape[0] == self.images.shape[0]
-        return len(self.labels.shape[0])
+        return self.labels.shape[0]
