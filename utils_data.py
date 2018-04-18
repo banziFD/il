@@ -71,3 +71,9 @@ class MyDataset(torch.utils.data.Dataset):
     def __len__(self):
         assert self.labels.shape[0] == self.images.shape[0]
         return self.labels.shape[0]
+
+def update_examplar():
+    pass
+
+def create_examplar():
+    pass
