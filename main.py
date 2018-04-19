@@ -74,15 +74,14 @@ for iter_group in range(1): #nb_group
         for step, (x, y) in enumerate(loader):
             x = Variable(x)
             y = Variable(y, requires_grad = False)
-            
+            ypred = icarl()
             ### loss function ###
             # classification term
 
             # distillation term
         
-        print('complete {}% on group {}'.format(ephch / param['épich'], iter_group))
+        print('complete {}% on group {}'.format(ephch / param['epoch'], iter_group))
 
     # Reduce Exemplar Set
 
-    # Construct Examplar Set
-                    
+    # Construct Examplar Set          
