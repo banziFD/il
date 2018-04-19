@@ -16,6 +16,6 @@ class Resnet(torch.nn.Module):
     
     def forward(self, x):
         # input Variable shape: (n, channels, 224, 224)
-        # output feature shape: (n, 512, 1, 1) -(n, 512)
+        # output feature shape: (n, 512, 1, 1) / (n, 512)
         y_feature = self.resnet(x)
         return y_feature

@@ -1,20 +1,19 @@
-import torch.nn as nn
+import torch
 
-class iCaRL(nn.model):
-    def __init__(self, params, resnet, pretrained = False):
-        self.class_means = params['class_means'
-        self.loss_batch = params['loss_batch']
-        self.files_protoset = params['files_protoset']
-        self.nb_class = params['nb_class']
-        self.nb_group = params['nb_group']
-        self.label_dict = param['label_dict']
-        self.linear = nn.Linear(512, self.nb_class * self.nb_group)
-        self.sigmoid = nn.Sigmoid()
-        self.resnet = resnet
+class iCaRL(torch.nn.Module):
+    def __init__(self, param, feature_net, label_dict):
+        super(iCaRL, self).__init__()
+        # self.files_protoset = params['files_protoset']
+        self.nb_class = param['nb_cl']
+        self.nb_group = param['nb_group']
+        self.label_dict = label_dict
+        self.linear = torch.nn.Linear(512, param['nb_cl'] * param['nb_group'])
+        self.sigmoid = torch.nn.Sigmoid()
+        self.feature_net = feature_net
     
     def forward(self, x):
         # extract freature map by resnet
-        y = self.resnet(x)
+        y = self.feature_net(x)
         # compute sigmoid value for every class
         y = self.linear(y)
         y = self.sigmoid(y)
@@ -23,9 +22,7 @@ class iCaRL(nn.model):
     def classify(self, x):
         # nearest-mean-of-examplars classification based on
         # feature map extracted by resnet
-        model = nn.Sequential(list(self.children())[:-2:]
-        pass
-    
+        model = nn.Sequential(list(self.children())[0:-2:1])
 
-
-    
+def format_label(a):
+    pass
