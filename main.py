@@ -39,7 +39,7 @@ param = {
 dataset_path = "/mnt/e/dataset/cifar-10-python"
 work_path = '/mnt/e/ilex'
 
-# dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-python"
+# dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-batches-python"
 # work_path = '/home/spyisflying/ilex'
 ###########################
 
@@ -101,6 +101,7 @@ for iter_group in range(1): #nb_group
             print(epoch, loss.data[0], ' time:', time.time() - start)
 
         print('complete {}% on group {}'.format(ephch / param['epoch'], iter_group))
+    torch.save(icral, work_path+'/model')
 
     # Reduce Exemplar Set
 
