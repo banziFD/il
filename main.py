@@ -1,6 +1,7 @@
 import utils_data
 import utils_resnet
 import utils_icarl
+import time
 import numpy as np
 import torch
 from torch.utils.data import DataLoader
@@ -64,10 +65,11 @@ files_protoset = [] * (nb_group * nb_cl)
 print('apply training algorithm...')
 feature_net = utils_resnet.Resnet(pretrained = True)
 icarl = utils_icarl.iCaRL(param, feature_net, label_dict)
-if(gpu):
-    icarl = icalr.cuda()
 loss_fn = torch.nn.BCELoss(size_average = False)
 optimizer = torch.optim.Adam(icarl.parameters(), lr = 0.001, weight_decay = wght_decay)
+if(gpu):
+    icarl = icalr.cuda()
+    loss_fn = loss_fn.cuda()
 
 for iter_group in range(1): #nb_group
     # iter_group contrals 
@@ -80,10 +82,13 @@ for iter_group in range(1): #nb_group
     unknown = Variable(icarl.unknown.clone(), requires_grad = False)
     for epoch in range(param['epoch']):
         print('training on {} epoch'.format(epoch))
-        a  = 0
         for step, (x, y) in enumerate(loader):
+            start = time.time()
             x = Variable(x)
             y = Variable(y.float(), requires_grad = False)
+            if(gpu):
+                x = x.cuda()
+                y = y.cuda()
             y_pred = icarl(x)
             ### loss function ###
             # classification term + distillation term
@@ -93,7 +98,7 @@ for iter_group in range(1): #nb_group
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-            print(epoch, loss.data[0])
+            print(epoch, loss.data[0], ' time:', time.time() - start)
 
         print('complete {}% on group {}'.format(ephch / param['epoch'], iter_group))
 
