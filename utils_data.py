@@ -27,14 +27,21 @@ def generate_mixing(nb_groups, nb_cl):
         ans.append(tuple(temp[i : i + nb_cl]))
     return ans
 
-def prepare_format(labels, images):
-    labels = np.array(labels, dtype = np.uint8)
+def prepare_format(labels, images, nb_group, nb_cl):
+    # labels_vec: [[0 1 0 0 ...]...]
+    labels = np.array(labels)
+    labels_vec = np.zeros((labels.shape[0], nb_group * nb_cl))
+    index = 0
+    for label in labels:
+        labels_vec[index, label] = 1
+        index = index + 1
     images = np.array(images)
     images = images.reshape(images.shape[0], 32 * 32, 3)
     images = images.reshape(images.shape[0], 3 , 32, 32).transpose([0, 2, 3, 1])
-    return labels, images
+    assert labels_vec.shape[0] == images.shape[0]
+    return labels_vec, images
 
-def prepare_files(dataset_path, work_path, mixing):
+def prepare_files(dataset_path, work_path, mixing, nb_group, nb_cl):
     # prepare image/label files according to mixing, who
     # will be load into model using dataloader
     # mixing format: [(class1, class2... in group1),
@@ -53,7 +60,7 @@ def prepare_files(dataset_path, work_path, mixing):
                 if current_labels[index] in target_class:
                     labels.append(current_labels[index])
                     images.append(current_images[index])
-        labels, images = prepare_format(labels, images)
+        labels, images = prepare_format(labels, images, nb_group, nb_cl)
         np.save(filename + 'label', labels)
         np.save(filename + 'image', images)
 

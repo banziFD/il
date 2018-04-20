@@ -7,14 +7,18 @@ class iCaRL(torch.nn.Module):
         self.nb_class = param['nb_cl']
         self.nb_group = param['nb_group']
         self.label_dict = label_dict
-        self.linear = torch.nn.Linear(512, param['nb_cl'] * param['nb_group'])
-        self.sigmoid = torch.nn.Sigmoid()
+        total_cl = param['nb_cl'] * param['nb_group']
+        self.known = torch.zeros(total_cl)
+        self.unknown = torch.ones(total_cl)
         self.feature_net = feature_net
+        self.linear = torch.nn.Linear(512, total_cl)
+        self.sigmoid = torch.nn.Sigmoid()
     
     def forward(self, x):
         # extract freature map by resnet
         y = self.feature_net(x)
         # compute sigmoid value for every class
+        y = y.view(y.size(0), -1)
         y = self.linear(y)
         y = self.sigmoid(y)
         return y
@@ -23,6 +27,3 @@ class iCaRL(torch.nn.Module):
         # nearest-mean-of-examplars classification based on
         # feature map extracted by resnet
         model = nn.Sequential(list(self.children())[0:-2:1])
-
-def format_label(a):
-    pass

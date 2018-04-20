@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 from torch.autograd import Variable
 ######### Modifiable Settings ##########
 # load all params into dict for convience
-batch_size = 64
+batch_size = 16
 nb_val = 50
 nb_cl = 2
 nb_group = 5
@@ -19,7 +19,7 @@ lr_fractor = 5
 gpu = False
 wght_decay = 0.00001
 param = {
-    'batch_size': 64,            # Batch size
+    'batch_size': batch_size,            # Batch size
     'nb_val': 50,                # Validation sample per class
     'nb_cl': 2,                 # Classes per group
     'nb_group': 5,             # Number of groups
@@ -37,6 +37,9 @@ param = {
 # Working space
 dataset_path = "/mnt/e/dataset/cifar-10-python"
 work_path = '/mnt/e/ilex'
+
+# dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-python"
+# work_path = '/home/spyisflying/ilex'
 ###########################
 
 # Read label and random mixing
@@ -50,7 +53,7 @@ print(mixing)
 ### Preparing the files for the training/validation ###
 print("Creating training/validation data")
 # run once for specific mixing
-#utils_data.prepare_files(dataset_path, work_path, mixing)
+#utils_data.prepare_files(dataset_path, work_path, mixing, nb_group, nb_cl)
 
 ### Initialization of some variables ###
 class_means = np.zeros((512, nb_group * nb_cl, 2, nb_group))
@@ -63,23 +66,35 @@ feature_net = utils_resnet.Resnet(pretrained = True)
 icarl = utils_icarl.iCaRL(param, feature_net, label_dict)
 if(gpu):
     icarl = icalr.cuda()
+loss_fn = torch.nn.BCELoss(size_average = False)
+optimizer = torch.optim.Adam(icarl.parameters(), lr = 0.001, weight_decay = wght_decay)
+
 for iter_group in range(1): #nb_group
     # iter_group contrals 
     # loading data by group
     data = utils_data.MyDataset(work_path, iter_group)
     loader = DataLoader(data, batch_size = batch_size, shuffle = True)
+    # known_mask
+    known = Variable(icarl.known.clone(), requires_grad = False)
+    # unknown_mask
+    unknown = Variable(icarl.unknown.clone(), requires_grad = False)
     for epoch in range(param['epoch']):
         print('training on {} epoch'.format(epoch))
         a  = 0
         for step, (x, y) in enumerate(loader):
             x = Variable(x)
-            y = Variable(y, requires_grad = False)
-            ypred = icarl()
+            y = Variable(y.float(), requires_grad = False)
+            y_pred = icarl(x)
             ### loss function ###
-            # classification term
+            # classification term + distillation term
+            y_target = unknown * y + known * y_pred.detach()
+            y_target = y_target.detach()
+            loss = loss_fn(y_pred, y_target)
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            print(epoch, loss.data[0])
 
-            # distillation term
-        
         print('complete {}% on group {}'.format(ephch / param['epoch'], iter_group))
 
     # Reduce Exemplar Set
