@@ -1,11 +1,11 @@
 import pickle
 import numpy as np
 import glob
-import torch.utils.data
-import torch
-import torchvision.transforms as transforms
 import PIL.Image as Image
 import random
+import torch
+import torch.utils.data
+import torchvision.transforms as transforms
 
 def cifar_unpickle(file):
     with open(file, 'rb') as fo:
@@ -70,7 +70,7 @@ def prepare_files(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val):
         np.save(filename + 'label', labels)
         np.save(filename + 'image', images)
         np.save(filename + 'label_val', labels_val)
-        np.save(filename + 'image_val', labels_val)
+        np.save(filename + 'image_val', images_val)
 
 def prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val):
     ### Due to limitation on computing source, using sampled dataset to find hyper parameter ###
@@ -93,7 +93,7 @@ def prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_va
                     labels.append(current_labels[index])
                     images.append(current_images[index])
         labels, images = prepare_format(labels, images, nb_group, nb_cl)
-        idx = np.random.choice(np.arange(labels.shape[0]), 600  + nb_val, replace = False)
+        idx = np.random.choice(np.arange(labels.shape[0]), 600 + nb_val, replace = False)
         labels = labels[idx]
         images = images[idx]
         labels_val = labels[-nb_val:,]
@@ -103,7 +103,7 @@ def prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_va
         np.save(filename + 'label', labels)
         np.save(filename + 'image', images)
         np.save(filename + 'label_val', labels_val)
-        np.save(filename + 'image_val', labels_val)
+        np.save(filename + 'image_val', images_val)
 
 class MyDataset(torch.utils.data.Dataset):
     def __init__(self, work_path, iter_group, val = False):
@@ -125,9 +125,10 @@ class MyDataset(torch.utils.data.Dataset):
     def __getitem__(self, index):
         label = self.labels[index]
         image = self.images[index]
+        image_orig = image
         image = Image.fromarray(image).resize((224, 224), Image.ANTIALIAS)
         image = self.transform(image)
-        return image, label
+        return image, label, image_orig
     
     def __len__(self):
         assert self.labels.shape[0] == self.images.shape[0]
