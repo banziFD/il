@@ -1,3 +1,4 @@
+import pickle
 import utils_data
 import utils_resnet
 import utils_icarl
@@ -54,7 +55,7 @@ print(mixing)
 ### Preparing the files for the training/validation ###
 print("Creating training/validation data")
 # run once for specific mixing
-utils_data.prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val)
+#utils_data.prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val)
 
 ### Initialization of some variables ###
 class_means = np.zeros((512, nb_group * nb_cl, 2, nb_group))
@@ -81,13 +82,20 @@ if(gpu):
 log = open(work_path + '/log.txt', 'ab', 0)
 log.write('epoch time training_loss validation_loss \n'.encode())
 
-
-for iter_group in range(1): #nb_group
-    # loading trainging data by group
-    data = utils_data.MyDataset(work_path, iter_group)
+for iter_group in range(2): #nb_group
+    # Loading protoset
+    if(iter_group == 0):
+        protoset = dict()
+    else:
+        protoset_name = work_path + '/protoset{}'.format(iter_group - 1)
+        with open(protoset_name, 'rb') as f:
+            protoset = pickle.load(f)
+            f.close()
+    # Loading trainging data by group
+    data = utils_data.MyDataset(work_path, iter_group, val = False, protoset = protoset)
     loader = DataLoader(data, batch_size = batch_size, shuffle = True)
     # loading validation data by group
-    data_val = utils_data.MyDataset(work_path, iter_group, val = True)
+    data_val = utils_data.MyDataset(work_path, iter_group, True)
     loader_val = DataLoader(data_val, batch_size = batch_size, shuffle = True)
     # known_mask
     known = Variable(icarl.known.clone(), requires_grad = False)
@@ -124,18 +132,22 @@ for iter_group in range(1): #nb_group
             # y_target_ = unknown * y + known * y_pred.detach()
             # y_target_ = y_target.detach()
             # loss_val = loss_fn(y_pred, y_target)
-            # error_val = error_val + loss_val.data[0]       
+            # error_val = error_val + loss_val.data[0]      
         current_line = [epoch, time.time() - start, error_train / 600, error_val / 20]
         print(current_line)
         current_line = str(current_line)[1:-1] + '\n'
         log.write(current_line.encode())
-        print('complete {}% on group {}'.format(epoch * 100 / epochs, iter_group))
-        torch.save(icarl, work_path+'/model{}'.format(epoch))
+        print('complete {}% on group {}'.format((epoch + 1) * 100 / epochs, iter_group))
+        break
+        #torch.save(icarl, work_path+'/model{}'.format(epoch))
 
-    # Reduce Exemplar Set
-    loader = DataLoader(data, shuffle = True)
-    #construct_proto(iter_group, mixing, loader)
-
-    
-    # Construct Examplar Set
+    # Construct Examplar Set and save it as a dict
+    loader = DataLoader(data, batch_size = batch_size, shuffle = True)
+    size = len(data)
+    protoset = icarl.construct_proto(iter_group, mixing, loader, protoset)
+    icarl.update_known(iter_group, mixing)
+    protoset_name = work_path + '/protoset{}'.format(iter_group)
+    with open(protoset_name, 'wb') as f:
+        pickle.dump(protoset, f)
+        f.close()
 log.close()

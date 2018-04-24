@@ -106,7 +106,7 @@ def prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_va
         np.save(filename + 'image_val', images_val)
 
 class MyDataset(torch.utils.data.Dataset):
-    def __init__(self, work_path, iter_group, val = False):
+    def __init__(self, work_path, iter_group, val = False, protoset = dict()):
         super(MyDataset, self).__init__()
         if(val == False):
             self.labels = work_path + '/group_{}'.format(iter_group) + 'label.npy'
@@ -116,12 +116,21 @@ class MyDataset(torch.utils.data.Dataset):
             self.images = work_path + '/group_{}'.format(iter_group) + 'image_val.npy'
         self.labels = np.load(self.labels)
         self.images = np.load(self.images)
+        if(any(protoset)):
+            cl = protoset.keys()
+            for key in cl:
+                label = np.zeros(10)
+                label[key] = 1
+                proto_labels = np.ones((20, 10)) * label
+                proto_images = protoset[key]
+                self.images = np.concatenate((self.images, proto_images), axis = 0)
+                self.labels = np.concatenate((self.labels, proto_labels), axis = 0)
+                
         self.transform = data_transform = transforms.Compose([
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406],
             std=[0.229, 0.224, 0.225])
              ])
-        
     def __getitem__(self, index):
         label = self.labels[index]
         image = self.images[index]
