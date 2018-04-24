@@ -40,3 +40,4 @@ config.rst
 
 *.txt
 /temp/
+*.ipynb
