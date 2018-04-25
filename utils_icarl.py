@@ -2,6 +2,15 @@ import numpy as np
 import torch
 from torch.autograd import Variable
 
+def train():
+    pass
+
+def val():
+    pass
+
+def test():
+    pass
+
 class iCaRL(torch.nn.Module):
     def __init__(self, param, feature_net, label_dict):
         super(iCaRL, self).__init__()
@@ -40,10 +49,13 @@ class iCaRL(torch.nn.Module):
                 if(d > torch.dist()):
                     ans = i
         assert i != -1
-        return ans
+        return self.label_dict(ans)
     
     def update_mean(self, protoset):
-        pass
+        keys = protoset.keys()
+        for key in keys:
+            pass
+
     
     def update_known(self, iter_group, mixing):
         for known_cl in mixing[iter_group]:
@@ -73,9 +85,9 @@ class iCaRL(torch.nn.Module):
         for step, (x, y, x_orig) in enumerate(loader):
             x = Variable(x, requires_grad = False)
             y = y.nonzero()
-            # feature = feature_net(x)
-            # feature = feature.data
-            # feature = feature.view(feature.size(0), -1)
+            feature = feature_net(x)
+            feature = feature.data
+            feature = feature.view(feature.size(0), -1)
             feature = torch.rand(16, 512)
             x_orig = x_orig.float()
             for item in y:
