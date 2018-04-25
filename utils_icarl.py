@@ -15,17 +15,17 @@ def train(icarl, optimizer, scheduler, loss_fn, loader):
         if(icarl.gpu):
             x = x.cuda()
             y = y.cuda()
-        # y_pred = icarl(x)
-        # ### loss function ###
-        # # classification term + distillation term
-        # y_target = unknown * y + known * y_pred.detach()
-        # y_target = y_target.detach()
-        # loss = loss_fn(y_pred, y_target)
-        # # backword and update model
-        # optimizer.zero_grad()
-        # error_train = error_train + loss.data[0]
-        # loss.backward()
-        # optimizer.step()
+        y_pred = icarl(x)
+        ### loss function ###
+        # classification term + distillation term
+        y_target = unknown * y + known * y_pred.detach()
+        y_target = y_target.detach()
+        loss = loss_fn(y_pred, y_target)
+        # backword and update model
+        optimizer.zero_grad()
+        error_train = error_train + loss.data[0]
+        loss.backward()
+        optimizer.step()
     return error_train
         
 def val(icarl, loss_fn, loader_val):
@@ -40,11 +40,11 @@ def val(icarl, loss_fn, loader_val):
         if(icarl.gpu):
             x_ = x_.cuda()
             y_ = y_.cuda()
-        # y_pred_ = icarl(x)
-        # y_target_ = unknown * y + known * y_pred.detach()
-        # y_target_ = y_target.detach()
-        # loss_val = loss_fn(y_pred, y_target)
-        # error_val = error_val + loss_val.data[0]      
+        y_pred_ = icarl(x)
+        y_target_ = unknown * y + known * y_pred.detach()
+        y_target_ = y_target.detach()
+        loss_val = loss_fn(y_pred, y_target)
+        error_val = error_val + loss_val.data[0]      
     return error_val
 
 def test(dataset_path, model,iter_group, mixing, protoset):
@@ -127,9 +127,9 @@ class iCaRL(torch.nn.Module):
         for step, (x, y, x_orig) in enumerate(loader):
             x = Variable(x, requires_grad = False)
             y = y.nonzero()
-            # feature = feature_net(x)
-            # feature = feature.data
-            # feature = feature.view(feature.size(0), -1)
+            feature = feature_net(x)
+            feature = feature.data
+            feature = feature.view(feature.size(0), -1)
             x_orig = x_orig.float()
             for item in y:
                 if(item[1] in current_cl):

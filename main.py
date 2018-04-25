@@ -17,7 +17,7 @@ nb_group = 5                       # Number of groups
 nb_proto = 20                      # Number of prototypes per class
 epochs = 20                        # Total number of epochs
 lr = 0.001                         # Initial learning rate
-lr_milestones = [3, 6, 9, 12, 15]  # Epochs where learning rate gets decreased
+lr_milestones = [4, 8, 12, 16, 20] # Epochs where learning rate gets decreased
 lr_factor = 0.05                    # Learning rate decrease factor
 gpu = False                        # Use gpu for training
 wght_decay = 0.00001               # Weight Decay
@@ -72,7 +72,7 @@ icarl = utils_icarl.iCaRL(param, feature_net, label_dict)
 # Training tools
 loss_fn = torch.nn.BCELoss(size_average = False)
 optimizer = torch.optim.Adam(icarl.parameters(), lr = lr, weight_decay = wght_decay)
-scheduler = MultiStepLR(optimizer, milestones = lr_milestones, gamma = 0.1)
+scheduler = MultiStepLR(optimizer, milestones = lr_milestones, gamma = lr_factor)
 if(gpu):
     icarl = icalr.cuda()
     loss_fn = loss_fn.cuda()
@@ -82,7 +82,7 @@ if(gpu):
 log = open(work_path + '/log.txt', 'ab', 0)
 log.write('epoch time training_loss validation_loss \n'.encode())
 
-for iter_group in range(2): #nb_group
+for iter_group in range(1): #nb_group
     # Loading protoset
     if(iter_group == 0):
         protoset = dict()
