@@ -66,11 +66,28 @@ def prepare_files(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val):
         labels = labels[0:-nb_val,]
         images = images[0:-nb_val,]
 
-        # save labels and images inw workspace
+        # save labels and images in workspace
         np.save(filename + 'label', labels)
         np.save(filename + 'image', images)
         np.save(filename + 'label_val', labels_val)
         np.save(filename + 'image_val', images_val)
+    # prepare test files as above
+    for i in range(len(mixing)):
+        filename = work_path + '/group_{}'.format(i)
+        target_class = mixing[i]
+        current = cifar_unpickle(work_path + '/test_batch')
+        current_labels = current[b'labels']
+        current_images = current[b'data']
+        labels_test = []
+        images_test = []
+        for index in range(len(current_labels)):
+            if current_labels[index] in target_class:
+                labels_test.append(current_labels[index])
+                images_test.append(current_images[inedx])
+        labels_test, iamges_test = prepare_format(labels, images, nb_group, nb_cl)
+        np.save(filename + 'label_test', labels_test)
+        np.save(filename + 'image_test', iamges_test)
+
 
 def prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val):
     ### Due to limitation on computing source, using sampled dataset to find hyper parameter ###
@@ -104,13 +121,31 @@ def prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_va
         np.save(filename + 'image', images)
         np.save(filename + 'label_val', labels_val)
         np.save(filename + 'image_val', images_val)
+    for i in range(len(mixing)):
+        filename = work_path + '/group_{}'.format(i)
+        target_class = mixing[i]
+        current = cifar_unpickle(dataset_path + '/test_batch')
+        current_labels = current[b'labels']
+        current_images = current[b'data']
+        labels_test = []
+        images_test = []
+        for index in range(len(current_labels)):
+            if current_labels[index] in target_class:
+                labels_test.append(current_labels[index])
+                images_test.append(current_images[index])
+        labels_test, iamges_test = prepare_format(labels_test, images_test, nb_group, nb_cl)
+        np.save(filename + 'label_test', labels_test)
+        np.save(filename + 'image_test', iamges_test)
 
 class MyDataset(torch.utils.data.Dataset):
-    def __init__(self, work_path, iter_group, val = False, protoset = dict()):
+    def __init__(self, work_path, iter_group, val = False, protoset = dict(), test = False):
         super(MyDataset, self).__init__()
         if(val == False):
             self.labels = work_path + '/group_{}'.format(iter_group) + 'label.npy'
             self.images = work_path + '/group_{}'.format(iter_group) + 'image.npy'
+            if(test):
+                self.labels = work_path + '/group_{}'.format(iter_group) + 'label_test.npy'
+                self.images = work_path + '/group_{}'.format(iter+group) + 'label_test.npy'
         else:
             self.labels = work_path + '/group_{}'.format(iter_group) + 'label_val.npy'
             self.images = work_path + '/group_{}'.format(iter_group) + 'image_val.npy'
@@ -131,6 +166,7 @@ class MyDataset(torch.utils.data.Dataset):
             transforms.Normalize(mean=[0.485, 0.456, 0.406],
             std=[0.229, 0.224, 0.225])
              ])
+
     def __getitem__(self, index):
         label = self.labels[index]
         image = self.images[index]

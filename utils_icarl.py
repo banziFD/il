@@ -2,13 +2,54 @@ import numpy as np
 import torch
 from torch.autograd import Variable
 
-def train():
-    pass
+def train(icarl, optimizer, scheduler, loss_fn, loader):
+    # known_mask
+    known = Variable(icarl.known.clone(), requires_grad = False)
+    # unknown_mask
+    unknown = Variable(icarl.unknown.clone(), requires_grad = False)
+    scheduler.step()
+    error_train = 0
+    for step, (x, y, x_orig) in enumerate(loader):
+        x = Variable(x)
+        y = Variable(y.float(), requires_grad = False)
+        if(icarl.gpu):
+            x = x.cuda()
+            y = y.cuda()
+        # y_pred = icarl(x)
+        # ### loss function ###
+        # # classification term + distillation term
+        # y_target = unknown * y + known * y_pred.detach()
+        # y_target = y_target.detach()
+        # loss = loss_fn(y_pred, y_target)
+        # # backword and update model
+        # optimizer.zero_grad()
+        # error_train = error_train + loss.data[0]
+        # loss.backward()
+        # optimizer.step()
+    return error_train
+        
+def val(icarl, loss_fn, loader_val):
+    # known_mask
+    known = Variable(icarl.known.clone(), requires_grad = False)
+    # unknown_mask
+    unknown = Variable(icarl.unknown.clone(), requires_grad = False)
+    error_val = 0
+    for step, (x_, y_, x_orig) in enumerate(loader_val):
+        x_ = Variable(x_, requires_grad = False)
+        y_ = Variable(y_.float(), requires_grad = False)
+        if(icarl.gpu):
+            x_ = x_.cuda()
+            y_ = y_.cuda()
+        # y_pred_ = icarl(x)
+        # y_target_ = unknown * y + known * y_pred.detach()
+        # y_target_ = y_target.detach()
+        # loss_val = loss_fn(y_pred, y_target)
+        # error_val = error_val + loss_val.data[0]      
+    return error_val
 
-def val():
-    pass
-
-def test():
+def test(dataset_path, model,iter_group, mixing, protoset):
+    current
+    data = Mydataset()
     pass
 
 class iCaRL(torch.nn.Module):
@@ -18,6 +59,7 @@ class iCaRL(torch.nn.Module):
         self.nb_group = param['nb_group']
         self.label_dict = label_dict
         self.nb_proto = param['nb_proto']
+        self.gpu = param['gpu']
         total_cl = param['nb_cl'] * param['nb_group']
         self.class_mean = torch.zeros(total_cl, 512)
         self.known = torch.zeros(total_cl)
@@ -85,10 +127,9 @@ class iCaRL(torch.nn.Module):
         for step, (x, y, x_orig) in enumerate(loader):
             x = Variable(x, requires_grad = False)
             y = y.nonzero()
-            feature = feature_net(x)
-            feature = feature.data
-            feature = feature.view(feature.size(0), -1)
-            feature = torch.rand(16, 512)
+            # feature = feature_net(x)
+            # feature = feature.data
+            # feature = feature.view(feature.size(0), -1)
             x_orig = x_orig.float()
             for item in y:
                 if(item[1] in current_cl):

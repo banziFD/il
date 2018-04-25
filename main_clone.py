@@ -16,7 +16,7 @@ nb_cl = 2                          # Classes per group
 nb_group = 5                       # Number of groups
 nb_proto = 20                      # Number of prototypes per class
 epochs = 20                        # Total number of epochs
-lr = 0.001                         # Initial learning rate
+lr = 1                             # Initial learning rate
 lr_milestones = [3, 6, 9, 12, 15]  # Epochs where learning rate gets decreased
 lr_factor = 0.05                    # Learning rate decrease factor
 gpu = False                        # Use gpu for training
@@ -55,7 +55,7 @@ print(mixing)
 ### Preparing the files for the training/validation ###
 print("Creating training/validation data")
 # run once for specific mixing
-#utils_data.prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val)
+utils_data.prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val)
 
 ### Initialization of some variables ###
 class_means = np.zeros((512, nb_group * nb_cl, 2, nb_group))
@@ -87,40 +87,67 @@ for iter_group in range(2): #nb_group
     if(iter_group == 0):
         protoset = dict()
     else:
-        protoset_name = work_path + '/protoset_{}_{}'.format(iter_group - 1, epochs - 1)
+        protoset_name = work_path + '/protoset{}'.format(iter_group - 1)
         with open(protoset_name, 'rb') as f:
             protoset = pickle.load(f)
             f.close()
-
+            
     # Loading trainging data by group
     data = utils_data.MyDataset(work_path, iter_group, val = False, protoset = protoset)
     loader = DataLoader(data, batch_size = batch_size, shuffle = True)
-    # Loading validation data by group
+    # loading validation data by group
     data_val = utils_data.MyDataset(work_path, iter_group, True)
     loader_val = DataLoader(data_val, batch_size = batch_size, shuffle = True)
-    for epoch in range(epochs):
+    # known_mask
+    known = Variable(icarl.known.clone(), requires_grad = False)
+    # unknown_mask
+    unknown = Variable(icarl.unknown.clone(), requires_grad = False)
+    for epoch in range(param['epochs']):
+        scheduler.step()
         start = time.time()
-        # Train
-        error_train = utils_icarl.train(icarl, optimizer, scheduler, loss_fn, loader)
-        # Validate
-        error_val = utils_icarl.val(icarl, loss_fn, loader_val)
-
-        # Print monitor info
+        error_train, error_val = 0, 0
+        for step, (x, y, x_orig) in enumerate(loader):
+            x = Variable(x)
+            y = Variable(y.float(), requires_grad = False)
+            if(gpu):
+                x = x.cuda()
+                y = y.cuda()
+            y_pred = icarl(x)
+            ### loss function ###
+            # classification term + distillation term
+            y_target = unknown * y + known * y_pred.detach()
+            y_target = y_target.detach()
+            loss = loss_fn(y_pred, y_target)
+            # backword and update model
+            optimizer.zero_grad()
+            error_train = error_train + loss.data[0]
+            loss.backward()
+            optimizer.step()
+        for step, (x_, y_, x_orig) in enumerate(loader_val):
+            x_ = Variable(x_, requires_grad = False)
+            y_ = Variable(y_.float(), requires_grad = False)
+            if(gpu):
+                x_ = x_.cuda()
+                y_ = y_.cuda()
+            y_pred_ = icarl(x)
+            y_target_ = unknown * y + known * y_pred.detach()
+            y_target_ = y_target.detach()
+            loss_val = loss_fn(y_pred, y_target)
+            error_val = error_val + loss_val.data[0]      
         current_line = [epoch, time.time() - start, error_train / 600, error_val / 20]
         print(current_line)
         current_line = str(current_line)[1:-1] + '\n'
         log.write(current_line.encode())
         print('complete {}% on group {}'.format((epoch + 1) * 100 / epochs, iter_group))
-        
-        # Save model every epoch for babysitting model
         torch.save(icarl, work_path+'/model{}'.format(epoch))
-        
-         # Construct Examplar Set and save it as a dict
-        loader = DataLoader(data, batch_size = batch_size, shuffle = True)
-        protoset = icarl.construct_proto(iter_group, mixing, loader, protoset)
-        protoset_name = work_path + '/protoset_{}_{}'.format(iter_group, epoch)
-        with open(protoset_name, 'wb') as f:
-            pickle.dump(protoset, f)
-            f.close()
+
+    # Construct Examplar Set and save it as a dict
+    loader = DataLoader(data, batch_size = batch_size, shuffle = True)
+    size = len(data)
+    protoset = icarl.construct_proto(iter_group, mixing, loader, protoset)
     icarl.update_known(iter_group, mixing)
+    protoset_name = work_path + '/protoset{}'.format(iter_group)
+    with open(protoset_name, 'wb') as f:
+        pickle.dump(protoset, f)
+        f.close()
 log.close()
