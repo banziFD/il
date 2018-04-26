@@ -56,12 +56,7 @@ print(mixing)
 ### Preparing the files for the training/validation ###
 print("Creating training/validation data")
 # run once for specific mixing
-#utils_data.prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val)
-
-### Initialization of some variables ###
-class_means = np.zeros((512, nb_group * nb_cl, 2, nb_group))
-loss_batch = []
-files_protoset = [] * (nb_group * nb_cl)
+utils_data.prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val)
 
 ### Start of the main algorithm ###
 print('apply training algorithm...')

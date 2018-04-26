@@ -28,18 +28,12 @@ def generate_mixing(nb_groups, nb_cl):
     return ans
 
 def prepare_format(labels, images, nb_group, nb_cl):
-    # labels_vec: [[0 1 0 0 ...]...]
     labels = np.array(labels)
-    labels_vec = np.zeros((labels.shape[0], nb_group * nb_cl))
-    index = 0
-    for label in labels:
-        labels_vec[index, label] = 1
-        index = index + 1
     images = np.array(images)
     images = images.reshape(images.shape[0], 32 * 32, 3)
     images = images.reshape(images.shape[0], 3 , 32, 32).transpose([0, 2, 3, 1])
-    assert labels_vec.shape[0] == images.shape[0]
-    return labels_vec, images
+    assert labels.shape[0] == images.shape[0]
+    return labels, images
 
 def prepare_files(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val):
     # prepare image/label files according to mixing, who
@@ -187,11 +181,15 @@ class MyDataset(torch.utils.data.Dataset):
 
     def __getitem__(self, index):
         label = self.labels[index]
+        # label: [[0 1 0 0 ...]...]
+        label_sca = label
+        label = torch.zeros(10)
+        label[label_sca] = 1
         image = self.images[index]
         image_orig = image
         image = Image.fromarray(image).resize((224, 224), Image.ANTIALIAS)
         image = self.transform(image)
-        return image, label, label.nonzero()[0][0]
+        return image, label, label_sca
     
     def __len__(self):
         assert self.labels.shape[0] == self.images.shape[0]
