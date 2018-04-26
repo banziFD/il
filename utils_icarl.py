@@ -10,7 +10,7 @@ def train(icarl, optimizer, scheduler, loss_fn, loader):
     unknown = Variable(icarl.unknown.clone(), requires_grad = False)
     scheduler.step()
     error_train = 0
-    for step, (x, y, x_orig) in enumerate(loader):
+    for step, (x, y) in enumerate(loader):
         x = Variable(x)
         y = Variable(y.float(), requires_grad = False)
         if(icarl.gpu):
@@ -35,7 +35,7 @@ def val(icarl, loss_fn, loader_val):
     # unknown_mask
     unknown = Variable(icarl.unknown.clone(), requires_grad = False)
     error_val = 0
-    for step, (x, y, x_orig) in enumerate(loader_val):
+    for step, (x, y) in enumerate(loader_val):
         x = Variable(x, requires_grad = False)
         y = Variable(y.float(), requires_grad = False)
         if(icarl.gpu):
@@ -111,7 +111,7 @@ class iCaRL(torch.nn.Module):
         feature_net = self.feature_net
         label_mem = torch.zeros(1, 10)
         feature_mem = torch.zeros(1, 512)
-        for step, (x, y, x_orig) in enumerate(loader):
+        for step, (x, y) in enumerate(loader):
             x = Variable(x, requires_grad = False)
             feature = feature_net(x)
             feature = feature.data
@@ -143,22 +143,34 @@ class iCaRL(torch.nn.Module):
         current_cl = mixing[iter_group]
         feature_mem = dict()
         image_mem = dict()
+        class_mean = dict()
+        class_count = dict()
         protoset = protoset
-        # Initialize feature_mem / image_mem dict
-        for i in current_cl:
-            feature_mem[i] = torch.zeros(1, 512)
-            image_mem[i] = torch.zeros(1, 3, 224, 224)
         # Extract features and save it into feature_mem
-        for step, (x, y, x_orig) in enumerate(loader):
+        for step, (x, y) in enumerate(loader):
+            for l in y:
+                l = l.nonzero()
+                if l in class_count:
+                    class_count += 1
+                else:
+                    class_count = 1
+    
+        for cl in class_count:
+            feature_mem[cl] = torch.zero(class_count[cl], 512)
+            image_mem[cl] = torch.zeros(class_count[cl], 3, 224, 224)
+        
+        for step, (x, y) in enumerate(loader):
             x = Variable(x, requires_grad = False)
             y = y.nonzero()
-            feature = feature_net(x)
-            feature = feature.data
-            feature = feature.view(feature.size(0), -1)
+            # feature = feature_net(x)
+            # feature = feature.data
+            # feature = feature.view(feature.size(0), -1)
+            feature = torch.rand(x.shape[0], 512)
+            x = x.data
             for item in y:
                 if(item[1] in current_cl):
-                    feature_mem[item[1]] = torch.cat((feature_mem[item[1]], feature[item[0]].view(1, -1)), 0)
-                    image_mem[item[1]] = torch.cat((image_mem[item[1]], x[item[0]]), 0)
+                    feature_mem[item[1]][class_count[item[1]] - 1] = feature[item[0]]
+                    
         for i in current_cl:
             feature_mem[i] = feature_mem[i][1:, :].clone()
             image_mem[i] = image_mem[i][1:, :, :, :].clone()

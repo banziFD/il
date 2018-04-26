@@ -39,10 +39,10 @@ param = {
 
 ######### Paths  ##########
 # Working space
-dataset_path = "/mnt/e/dataset/cifar-10-python"
-work_path = '/mnt/e/ilex'
-# dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-batches-py"
-# work_path = '/home/spyisflying/ilex'
+# dataset_path = "/mnt/e/dataset/cifar-10-python"
+# work_path = '/mnt/e/ilex'
+dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-batches-py"
+work_path = '/home/spyisflying/ilex'
 ###########################
 
 # Read label and random mixing
@@ -83,7 +83,7 @@ if(gpu):
 log = open(work_path + '/log.txt', 'ab', 0)
 log.write('epoch time training_loss validation_loss \n'.encode())
 
-for iter_group in range(1): #nb_group
+for iter_group in range(2): #nb_group
     # Loading protoset
     if(iter_group == 0):
         protoset = dict()
@@ -102,9 +102,10 @@ for iter_group in range(1): #nb_group
     for epoch in range(epochs):
         start = time.time()
         # Train
-        error_train = utils_icarl.train(icarl, optimizer, scheduler, loss_fn, loader)
+        error_train, error_val = 0, 0
+        #error_train = utils_icarl.train(icarl, optimizer, scheduler, loss_fn, loader)
         # Validate
-        error_val = utils_icarl.val(icarl, loss_fn, loader_val)
+        #error_val = utils_icarl.val(icarl, loss_fn, loader_val)
 
         # Print monitor info
         current_line = [epoch, time.time() - start, error_train / 600, error_val / 20]
@@ -117,6 +118,7 @@ for iter_group in range(1): #nb_group
         torch.save(icarl, work_path+'/model{}'.format(epoch))
         # Construct Examplar Set and save it as a dict
         loader = DataLoader(data, batch_size = batch_size, shuffle = True)
+        print('Constructing protoset')
         protoset = icarl.construct_proto(iter_group, mixing, loader, protoset)
         protoset_name = work_path + '/protoset_{}_{}'.format(iter_group, epoch)
         with open(protoset_name, 'wb') as f:

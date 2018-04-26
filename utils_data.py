@@ -191,7 +191,7 @@ class MyDataset(torch.utils.data.Dataset):
         image_orig = image
         image = Image.fromarray(image).resize((224, 224), Image.ANTIALIAS)
         image = self.transform(image)
-        return image, label, image_orig
+        return image, label, label.nonzero()[0][0]
     
     def __len__(self):
         assert self.labels.shape[0] == self.images.shape[0]
