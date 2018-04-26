@@ -138,30 +138,48 @@ def prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_va
         np.save(filename + 'image_test', iamges_test)
 
 class MyDataset(torch.utils.data.Dataset):
-    def __init__(self, work_path, iter_group, val = False, protoset = dict(), test = False):
+    def __init__(self, work_path, iter_group, mode = 0, protoset = dict()):
+        ### mode (0 stands for train + protoset)
+        ###      (1 stands for val) 
+        ###      (2 stands for test) 
+        ###      (3 stands for protoset only)
         super(MyDataset, self).__init__()
-        if(val == False):
+        self.mode = mode
+        if(mode == 0):
             self.labels = work_path + '/group_{}'.format(iter_group) + 'label.npy'
             self.images = work_path + '/group_{}'.format(iter_group) + 'image.npy'
-            if(test):
-                self.labels = work_path + '/group_{}'.format(iter_group) + 'label_test.npy'
-                self.images = work_path + '/group_{}'.format(iter+group) + 'label_test.npy'
-        else:
+            self.labels = np.load(self.labels)
+            self.images = np.load(self.images)
+            if(any(protoset)):
+                cl = protoset.keys()
+                for key in cl:
+                    label = np.zeros(10)
+                    label[key] = 1
+                    proto_labels = np.ones((20, 10)) * label
+                    proto_images = protoset[key]
+                    self.images = np.concatenate((self.images, proto_images), axis = 0)
+                    self.labels = np.concatenate((self.labels, proto_labels), axis = 0)
+        if(mode == 1):
             self.labels = work_path + '/group_{}'.format(iter_group) + 'label_val.npy'
             self.images = work_path + '/group_{}'.format(iter_group) + 'image_val.npy'
-        self.labels = np.load(self.labels)
-        self.images = np.load(self.images)
-        if(any(protoset)):
+            self.labels = np.load(self.labels)
+            self.images = np.load(self.images)
+        if(mode == 2):
+            self.labels = work_path + '/group_{}'.format(iter_group) + 'label_test.npy'
+            self.images = work_path + '/group_{}'.format(iter_group) + 'image_test.npy'
+            self.labels = np.load(self.labels)
+            self.images = np.load(self.images)
+        if(mode == 3):
             cl = protoset.keys()
             for key in cl:
                 label = np.zeros(10)
                 label[key] = 1
                 proto_labels = np.ones((20, 10)) * label
                 proto_images = protoset[key]
-                self.images = np.concatenate((self.images, proto_images), axis = 0)
-                self.labels = np.concatenate((self.labels, proto_labels), axis = 0)
+                self.images = proto_images
+                self.labels = proto_labels      
                 
-        self.transform = data_transform = transforms.Compose([
+        self.transform = transforms.Compose([
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406],
             std=[0.229, 0.224, 0.225])

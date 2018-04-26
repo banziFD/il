@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 from torch.autograd import Variable
+import torchvision.transforms as transforms
 
 def train(icarl, optimizer, scheduler, loss_fn, loader):
     # known_mask
@@ -34,34 +35,27 @@ def val(icarl, loss_fn, loader_val):
     # unknown_mask
     unknown = Variable(icarl.unknown.clone(), requires_grad = False)
     error_val = 0
-    for step, (x_, y_, x_orig) in enumerate(loader_val):
-        x_ = Variable(x_, requires_grad = False)
-        y_ = Variable(y_.float(), requires_grad = False)
+    for step, (x, y, x_orig) in enumerate(loader_val):
+        x = Variable(x, requires_grad = False)
+        y = Variable(y.float(), requires_grad = False)
         if(icarl.gpu):
-            x_ = x_.cuda()
-            y_ = y_.cuda()
-        y_pred_ = icarl(x)
-        y_target_ = unknown * y + known * y_pred.detach()
-        y_target_ = y_target.detach()
+            x = x.cuda()
+            y = y.cuda()
+        y_pred = icarl(x)
+        y_target = unknown * y + known * y_pred.detach()
+        y_target = y_target.detach()
         loss_val = loss_fn(y_pred, y_target)
         error_val = error_val + loss_val.data[0]      
     return error_val
 
-def test(dataset_path, model,iter_group, mixing, protoset):
-    current
-    data = Mydataset()
-    pass
-
 class iCaRL(torch.nn.Module):
     def __init__(self, param, feature_net, label_dict):
         super(iCaRL, self).__init__()
-        self.nb_class = param['nb_cl']
-        self.nb_group = param['nb_group']
+        self.total_cl = param['nb_cl'] * param['nb_group']
         self.label_dict = label_dict
         self.nb_proto = param['nb_proto']
         self.gpu = param['gpu']
         total_cl = param['nb_cl'] * param['nb_group']
-        self.class_mean = torch.zeros(total_cl, 512)
         self.known = torch.zeros(total_cl)
         self.unknown = torch.ones(total_cl)
         self.feature_net = feature_net
@@ -76,29 +70,59 @@ class iCaRL(torch.nn.Module):
         y = self.linear(y)
         y = self.sigmoid(y)
         return y
- 
-    def classify(self, x):
+
+    def classify(self, protoset, test_path):
+        known_cl = protoset.keys()
+        class_mean = tensor.zeros(10, 512)
+        for cl in known_cl:
+            proto_image = protoset[cl]
+            x = Variable(proto_image, requires_grad = False)
+            feature = feature_net(x)
+            feature = feature.data
+            feature = feature.view(20, -1)
+            mean = torch.mean(feature, 0)
+            class_mean = mean
+        feature = torch.load(test_path + '/feature')
+        label = torch.load(test_path + '/label')
+        assert feature.shape[0] == label.shape[0]
+        count_all, count_true = 0, 0
+        for index in range(feature.shape[0]):
+            current_f = feature[index]
+            current_l = label[index]
+            distance = class_mean - current_f
+            distance = distance * distance
+            distance = torch.sum(distance, 1)
+            dist = 10000000
+            ypred = -1
+            for j in range(distance.shape[0]):
+                new_dist = dist[j]
+                if(new_dist < dist):
+                    ypred = j
+                    dist = new_dist
+            if(current_l[j] == 1):
+                count_true = count_true + 1
+            count_all = count_all + 1
+        print(count_true / count_all)
+            
+
+    def feature_extract(self, loader, test_path):
         # nearest-mean-of-examplars classification based on
         # feature map extracted by resnet
-        feature = self.feature_net(x)
-        feature = feature.data
-        assert self.class_mean.shape[0] == self.known.shape[0]
-        d = torch.Tensor(float('Inf'))
-        ans = -1
-        for i in range(self.class_mean.shape[0]):
-            if(self.known[i] == 1):
-                new_d = torch.dist(feature, class_mean[i])
-                if(d > torch.dist()):
-                    ans = i
-        assert i != -1
-        return self.label_dict(ans)
-    
-    def update_mean(self, protoset):
-        keys = protoset.keys()
-        for key in keys:
-            pass
+        feature_net = self.feature_net
+        label_mem = torch.zeros(1, 10)
+        feature_mem = torch.zeros(1, 512)
+        for step, (x, y, x_orig) in enumerate(loader):
+            x = Variable(x, requires_grad = False)
+            feature = feature_net(x)
+            feature = feature.data
+            feature = feature.view(feature.shape[0], -1)
+            label_mem = torch.cat(label_mem, y)
+            feature_mem = torch.cat(feature_mem, feature)
+        feature_mem = feature_mem[1:, :].clone()
+        label_mem = label_mem[1:, :].clone()
+        torch.save(feature_mem, test_path + '/feature')
+        torch.save(label_mem, test_path + '/label')
 
-    
     def update_known(self, iter_group, mixing):
         for known_cl in mixing[iter_group]:
             self.known[known_cl] = 1
@@ -111,7 +135,7 @@ class iCaRL(torch.nn.Module):
         distance = distance * distance
         distance = torch.sum(distance, 1)
         value, index = torch.topk(distance, nb_proto, largest = False)
-        protoset = image_mem[index]
+        protoset = image_mem[index].clone()
         return protoset
     
     def construct_proto(self, iter_group, mixing, loader, protoset):
@@ -123,28 +147,28 @@ class iCaRL(torch.nn.Module):
         # Initialize feature_mem / image_mem dict
         for i in current_cl:
             feature_mem[i] = torch.zeros(1, 512)
-            image_mem[i] = torch.zeros(1, 32, 32, 3)
+            image_mem[i] = torch.zeros(1, 3, 224, 224)
+        # Extract features and save it into feature_mem
         for step, (x, y, x_orig) in enumerate(loader):
             x = Variable(x, requires_grad = False)
             y = y.nonzero()
             feature = feature_net(x)
             feature = feature.data
             feature = feature.view(feature.size(0), -1)
-            x_orig = x_orig.float()
             for item in y:
                 if(item[1] in current_cl):
                     feature_mem[item[1]] = torch.cat((feature_mem[item[1]], feature[item[0]].view(1, -1)), 0)
-                    image_mem[item[1]] = torch.cat((image_mem[item[1]], x_orig[item[0]].view(1, 32, 32, 3)), 0)
+                    image_mem[item[1]] = torch.cat((image_mem[item[1]], x[item[0]]), 0)
         for i in current_cl:
-            feature_mem[i] = feature_mem[i][1:, :]
-            image_mem[i] = image_mem[i][1:, :, :, :]
+            feature_mem[i] = feature_mem[i][1:, :].clone()
+            image_mem[i] = image_mem[i][1:, :, :, :].clone()
         # Update classmean for classify
         for i in current_cl:
             mean = torch.mean(feature_mem[i], 0)
-            self.class_mean[i] = mean
+            class_mean[i] = mean
         # Choose image as protoset example
         nb_proto = self.nb_proto
         for i in current_cl:
-            protoset[i] = self.choose_top(nb_proto, feature_mem[i], image_mem[i], self.class_mean[i])
+            protoset[i] = self.choose_top(nb_proto, feature_mem[i], image_mem[i], class_mean[i])
             protoset[i] = protoset[i].numpy().astype(np.uint8)
         return protoset

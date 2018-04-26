@@ -8,6 +8,7 @@ import torch
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
 from torch.optim.lr_scheduler import MultiStepLR
+
 ######### Modifiable Settings ##########
 # load all params into dict for convience
 batch_size = 16                    # Batch size
@@ -16,8 +17,8 @@ nb_cl = 2                          # Classes per group
 nb_group = 5                       # Number of groups
 nb_proto = 20                      # Number of prototypes per class
 epochs = 20                        # Total number of epochs
-lr = 0.001                         # Initial learning rate
-lr_milestones = [4, 8, 12, 16, 20] # Epochs where learning rate gets decreased
+lr = 1                             # Initial learning rate
+lr_milestones = [3, 6, 9, 12, 15]  # Epochs where learning rate gets decreased
 lr_factor = 0.05                    # Learning rate decrease factor
 gpu = False                        # Use gpu for training
 wght_decay = 0.00001               # Weight Decay
@@ -93,10 +94,10 @@ for iter_group in range(1): #nb_group
             f.close()
 
     # Loading trainging data by group
-    data = utils_data.MyDataset(work_path, iter_group, val = False, protoset = protoset)
+    data = utils_data.MyDataset(work_path, iter_group, 0, protoset)
     loader = DataLoader(data, batch_size = batch_size, shuffle = True)
     # Loading validation data by group
-    data_val = utils_data.MyDataset(work_path, iter_group, True)
+    data_val = utils_data.MyDataset(work_path, iter_group, mode = 1)
     loader_val = DataLoader(data_val, batch_size = batch_size, shuffle = True)
     for epoch in range(epochs):
         start = time.time()
@@ -111,11 +112,10 @@ for iter_group in range(1): #nb_group
         current_line = str(current_line)[1:-1] + '\n'
         log.write(current_line.encode())
         print('complete {}% on group {}'.format((epoch + 1) * 100 / epochs, iter_group))
-        
+
         # Save model every epoch for babysitting model
         torch.save(icarl, work_path+'/model{}'.format(epoch))
-        
-         # Construct Examplar Set and save it as a dict
+        # Construct Examplar Set and save it as a dict
         loader = DataLoader(data, batch_size = batch_size, shuffle = True)
         protoset = icarl.construct_proto(iter_group, mixing, loader, protoset)
         protoset_name = work_path + '/protoset_{}_{}'.format(iter_group, epoch)
