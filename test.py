@@ -1,5 +1,6 @@
 import utils_data
 import utils_icarl
+import pickle
 import torch
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
@@ -42,14 +43,11 @@ test_path = '/mnt/e/ilte'
 # work_path = '/home/spyisflying/ilex'
 # test_path = '/home/spyisflying/ilte'
 ###########################
-
 mixing = [(4, 7), (8, 5), (6, 2), (1, 3), (9, 0)] 
-model = torch.load(test_path + '/model19')
-model.update_known(0, mixing)
-print(model.class_mean[4])
-print(model.class_mean[7])
-# data = utils_data.MyDataset(work_path, 0, val = False, protoset = dict(), test = True)
-# loader = DataLoader(data, batch_size = 1, shuffle = True)
-# for step, (x, y, x_orig) in enumerate(loader):
-#     x = Variable(x)
-#     y_pred = model.classify(x)
+#utils_data.prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val)
+protoset = pickle.load(open(test_path + '/protoset_0_9','rb'))
+testset = utils_data.MyDataset(test_path, 0, 2, protoset)
+model = torch.load(test_path + '/model9')
+loader = DataLoader(testset, batch_size = 16, shuffle = False)
+#model.feature_extract(loader, test_path)
+model.classify(protoset, test_path)

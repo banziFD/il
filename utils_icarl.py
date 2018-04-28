@@ -77,17 +77,19 @@ class iCaRL(torch.nn.Module):
 
     def classify(self, protoset, test_path):
         known_cl = protoset.keys()
-        class_mean = tensor.zeros(self.total_cl, 512)
+        class_mean = torch.zeros(self.total_cl, 512)
         for cl in known_cl:
             proto_image = protoset[cl]
             x = Variable(proto_image, requires_grad = False)
-            feature = feature_net(x)
+            feature = self.feature_net(x)
             feature = feature.data
             feature = feature.view(self.nb_proto, -1)
             mean = torch.mean(feature, 0)
             class_mean[cl] = mean
         feature = torch.load(test_path + '/feature')
         label = torch.load(test_path + '/label')
+        print(feature.shape)
+        print(label.shape)
         assert feature.shape[0] == label.shape[0]
         count_true = 0
         count_all = feature.shape[0]
@@ -98,7 +100,7 @@ class iCaRL(torch.nn.Module):
             distance = distance * distance
             distance = torch.sum(distance, 1)
             dist, y_pred = torch.topk(distance, 1, largest = False)
-            if(y_pred == label[index]):
+            if(y_pred[0] == label[index]):
                 count_true += 1
         print(count_true / count_all)
             
@@ -111,7 +113,7 @@ class iCaRL(torch.nn.Module):
         for step, (x, y, x_orig, y_sca) in enumerate(loader):
             test_count += 1
 
-        label_mem = torch.zeros(test_count, self.total_cl)
+        label_mem = torch.zeros(test_count)
         feature_mem = torch.zeros(test_count, 512)
         test_count = 0
         for step, (x, y, x_orig, y_sca) in enumerate(loader):
