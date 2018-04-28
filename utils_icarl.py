@@ -143,6 +143,7 @@ class iCaRL(torch.nn.Module):
         distance = distance * distance
         distance = torch.sum(distance, 1)
         value, index = torch.topk(distance, nb_proto, largest = False)
+        
         protoset = image_mem[index].clone()
         protoset_orig = image_orig_mem[index].clone()
         return protoset, protoset_orig
@@ -171,6 +172,7 @@ class iCaRL(torch.nn.Module):
             if(self.gpu):
                 feature_mem[cl] = feature_mem[cl].cuda()
                 image_mem[cl] = image_mem[cl].cuda()
+                image_orig_mem[cl] = image_orig_mem.cuda()
         
         for step, (x, y, x_orig, y_sca) in enumerate(loader):
             x = Variable(x, requires_grad = False)

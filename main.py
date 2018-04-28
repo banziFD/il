@@ -11,16 +11,16 @@ from torch.optim.lr_scheduler import MultiStepLR
 
 ######### Modifiable Settings ##########
 # load all params into dict for convience
-batch_size = 16                    # Batch size
+batch_size = 256                    # Batch size
 nb_val = 20                        # Validation sample per class
 nb_cl = 2                          # Classes per group
 nb_group = 5                       # Number of groups
 nb_proto = 20                      # Number of prototypes per class
-epochs = 10                        # Total number of epochs
+epochs = 20                        # Total number of epochs
 lr = 0.001                         # Initial learning rate
-lr_milestones = [2, 4, 6, 8, 10]   # Epochs where learning rate gets decreased
+lr_milestones = [4,8,12,16,20]   # Epochs where learning rate gets decreased
 lr_factor = 0.05                   # Learning rate decrease factor
-gpu = False                        # Use gpu for training
+gpu =True                        # Use gpu for training
 wght_decay = 0.00001               # Weight Decay
 param = {
     'batch_size': batch_size,           
@@ -41,7 +41,9 @@ param = {
 # Working space
 # dataset_path = "/mnt/e/dataset/cifar-10-python"
 # work_path = '/mnt/e/ilex'
-dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-batches-py"
+#dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-batches-py"
+#work_path = '/home/spyisflying/ilex'
+dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-python"
 work_path = '/home/spyisflying/ilex'
 ###########################
 
@@ -56,7 +58,7 @@ print(mixing)
 ### Preparing the files for the training/validation ###
 print("Creating training/validation data")
 # run once for specific mixing
-#utils_data.prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val)
+utils_data.prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val)
 
 ### Start of the main algorithm ###
 print('apply training algorithm...')
@@ -67,20 +69,18 @@ icarl = utils_icarl.iCaRL(param, feature_net, label_dict)
 
 # Training tools
 loss_fn = torch.nn.BCELoss(size_average = False)
+if(gpu):
+    icarl = icarl.cuda()
+    loss_fn = loss_fn.cuda()
 optimizer = torch.optim.Adam(icarl.parameters(), lr = lr, 
 weight_decay = wght_decay)
 scheduler = MultiStepLR(optimizer, milestones = lr_milestones, 
 gamma = lr_factor)
-if(gpu):
-    icarl = icalr.cuda()
-    loss_fn = loss_fn.cuda()
-    scheduler = scheduler.cuda()
-
 # Recording traing process
 log = open(work_path + '/log.txt', 'ab', 0)
 log.write('epoch time training_loss validation_loss \n'.encode())
 
-for iter_group in range(2): #nb_group
+for iter_group in range(1): #nb_group
     # Loading protoset
     if(iter_group == 0):
         protoset = dict()
