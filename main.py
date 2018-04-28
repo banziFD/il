@@ -66,37 +66,40 @@ print('apply training algorithm...')
 # Model initialization
 feature_net = utils_resnet.Resnet(pretrained = True)
 icarl = utils_icarl.iCaRL(param, feature_net, label_dict)
-
-# Training tools
 loss_fn = torch.nn.BCELoss(size_average = False)
+
+# Load model to gpu if device is available
 if(gpu):
     icarl = icarl.cuda()
     loss_fn = loss_fn.cuda()
+
+# Training tools
 optimizer = torch.optim.Adam(icarl.parameters(), lr = lr, 
 weight_decay = wght_decay)
 scheduler = MultiStepLR(optimizer, milestones = lr_milestones, 
 gamma = lr_factor)
-# Recording traing process
+
+# Recording traing process in log file
 log = open(work_path + '/log.txt', 'ab', 0)
 log.write('epoch time training_loss validation_loss \n'.encode())
 
+# Training algorithm
 for iter_group in range(1): #nb_group
     # Loading protoset
     if(iter_group == 0):
         protoset = dict()
         protoset_orig = dict()
     else:
-        protoset_name = work_path + '/protoset_{}_{}'.format(iter_group - 1, 
-        epochs - 1)
-        protoset_orig_name = work_path + '/protoset_orig_{}_{}'.format(
-            iter_group - 1, epochs - 1)
+        protoset_name = work_path + 
+        '/protoset_{}_{}'.format(iter_group - 1, epochs - 1)
+        protoset_orig_name = work_path + 
+        '/protoset_orig_{}_{}'.format(iter_group - 1, epochs - 1)
         with open(protoset_name, 'rb') as f:
             protoset = pickle.load(f)
             f.close()
         with open(protoset_orig_name, 'rb') as f:
             protoset_orig = pickle.load(f)
             f.close()
-
     # Loading trainging data by group
     data = utils_data.MyDataset(work_path, iter_group, 0, protoset_orig)
     loader = DataLoader(data, batch_size = batch_size, shuffle = True)
@@ -110,7 +113,6 @@ for iter_group in range(1): #nb_group
         error_train = utils_icarl.train(icarl, optimizer, scheduler, loss_fn, loader)
         # Validate
         #error_val = utils_icarl.val(icarl, loss_fn, loader_val)
-
         # Print monitor info
         current_line = [epoch, time.time() - start, 
         error_train / 600, error_val / 20]
@@ -121,7 +123,10 @@ for iter_group in range(1): #nb_group
             (epoch + 1) * 100 / epochs, iter_group))
 
         # Save model every epoch for babysitting model
-        torch.save(icarl, work_path+'/model{}'.format(epoch))
+        if(gpu):
+            # Save any model in cpu mode so it work on all platform
+            icarl_save = icarl.clone.cpu()
+        torch.save(icarl, work_path+'/model{}_{}'.format(iter_group, epoch))
         # Construct Examplar Set and save it as a dict
         loader = DataLoader(data, batch_size = batch_size, shuffle = True)
         print('Constructing protoset')
