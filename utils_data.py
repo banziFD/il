@@ -83,7 +83,8 @@ def prepare_files(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val):
         np.save(filename + 'image_test', iamges_test)
 
 
-def prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val):
+def prepare_files_sample(dataset_path, work_path, mixing, 
+nb_group, nb_cl, nb_val):
     ### Due to limitation on computing source, using sampled dataset to find hyper parameter ###
     # prepare image/label files according to mixing, who
     # will be load into model using dataloader
@@ -104,7 +105,8 @@ def prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_va
                     labels.append(current_labels[index])
                     images.append(current_images[index])
         labels, images = prepare_format(labels, images, nb_group, nb_cl)
-        idx = np.random.choice(np.arange(labels.shape[0]), 600 + nb_val, replace = False)
+        idx = np.random.choice(np.arange(labels.shape[0]), 
+        600 + nb_val, replace = False)
         labels = labels[idx]
         images = images[idx]
         labels_val = labels[-nb_val:,]
@@ -127,7 +129,8 @@ def prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_va
             if current_labels[index] in target_class:
                 labels_test.append(current_labels[index])
                 images_test.append(current_images[index])
-        labels_test, iamges_test = prepare_format(labels_test, images_test, nb_group, nb_cl)
+        labels_test, iamges_test = prepare_format(labels_test, 
+        images_test, nb_group, nb_cl)
         np.save(filename + 'label_test', labels_test)
         np.save(filename + 'image_test', iamges_test)
 
@@ -145,14 +148,13 @@ class MyDataset(torch.utils.data.Dataset):
             self.labels = np.load(self.labels)
             self.images = np.load(self.images)
             if(any(protoset)):
-                cl = protoset.keys()
-                for key in cl:
-                    label = np.zeros(10)
-                    label[key] = 1
-                    proto_labels = np.ones((20, 10)) * label
-                    proto_images = protoset[key]
-                    self.images = np.concatenate((self.images, proto_images), axis = 0)
-                    self.labels = np.concatenate((self.labels, proto_labels), axis = 0)
+                for cl in protoset:
+                    proto_labels = np.ones(20) * cl
+                    proto_images = protoset[cl]
+                    self.images = np.concatenate((self.images, proto_images), 
+                    axis = 0)
+                    self.labels = np.concatenate((self.labels, proto_labels), 
+                    axis = 0)
         if(mode == 1):
             self.labels = work_path + '/group_{}'.format(iter_group) + 'label_val.npy'
             self.images = work_path + '/group_{}'.format(iter_group) + 'image_val.npy'
@@ -164,12 +166,9 @@ class MyDataset(torch.utils.data.Dataset):
             self.labels = np.load(self.labels)
             self.images = np.load(self.images)
         if(mode == 3):
-            cl = protoset.keys()
-            for key in cl:
-                label = np.zeros(10)
-                label[key] = 1
-                proto_labels = np.ones((20, 10)) * label
-                proto_images = protoset[key]
+            for cl in protoset:
+                proto_labels = np.ones(20) * cl
+                proto_images = protoset[cl]
                 self.images = proto_images
                 self.labels = proto_labels      
                 
@@ -189,7 +188,7 @@ class MyDataset(torch.utils.data.Dataset):
         image_orig = image
         image = Image.fromarray(image).resize((224, 224), Image.ANTIALIAS)
         image = self.transform(image)
-        return image, label, label_sca
+        return image, label, image_orig, label_sca
     
     def __len__(self):
         assert self.labels.shape[0] == self.images.shape[0]
