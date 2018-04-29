@@ -106,25 +106,25 @@ class iCaRL(torch.nn.Module):
             distance = distance * distance
             distance = torch.sum(distance, 1)
             dist, y_pred = torch.topk(distance, 1, largest = False)
+            print(y_pred[0], label[index])
             if(y_pred[0] == label[index]):
                 count_true += 1
         print(count_true / count_all)
             
 
-    def feature_extract(self, loader, test_path):
+    def feature_extract(self, loader, test_path, iter_group, epoch):
         # nearest-mean-of-examplars classification based on
         # feature map extracted by resnet
         feature_net = self.feature_net
         test_count = 0
         for step, (x, y, x_orig, y_sca) in enumerate(loader):
-            test_count += 1
-        
+            test_count += y_sca.shape[0]
         # Pre-allocate memory 
         label_mem = torch.zeros(test_count)
         feature_mem = torch.zeros(test_count, 512)
         if(self.gpu):
             label_mem = label_mem.cuda()
-            feature_mem = label_mem.cuda()
+            feature_mem = feature_mem.cuda()
         
         # Extract features and save into label_mem/feature_mem
         test_count = 0
@@ -151,8 +151,8 @@ class iCaRL(torch.nn.Module):
             label_mem = label_mem.cpu()
         
         # Save data to test_path
-        torch.save(feature_mem, test_path + '/feature')
-        torch.save(label_mem, test_path + '/label')
+        torch.save(feature_mem, test_path + '/feature_{}_{}.'format(iter_group, epoch))
+        torch.save(label_mem, test_path + '/label_{}_{}'.format(iter_group, epoch))
 
     def update_known(self, iter_group, mixing):
         for known_cl in mixing[iter_group]:

@@ -45,6 +45,7 @@ param = {
 #work_path = '/home/spyisflying/ilex'
 dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-python"
 work_path = '/home/spyisflying/ilex'
+test_path = '/home/spyisflying/ilte'
 ###########################
 
 # Read label and random mixing
@@ -73,18 +74,16 @@ if(gpu):
     icarl = icarl.cuda()
     loss_fn = loss_fn.cuda()
 
-# Training tools
-optimizer = torch.optim.Adam(icarl.parameters(), lr = lr, 
-weight_decay = wght_decay)
-scheduler = MultiStepLR(optimizer, milestones = lr_milestones, 
-gamma = lr_factor)
-
 # Recording traing process in log file
 log = open(work_path + '/log.txt', 'ab', 0)
 log.write('epoch time training_loss validation_loss \n'.encode())
 
 # Training algorithm
 for iter_group in range(1): #nb_group
+    # Training tools
+    optimizer = torch.optim.Adam(icarl.parameters(), lr = lr, weight_decay = wght_decay)
+    scheduler = MultiStepLR(optimizer, milestones = lr_milestones, gamma = lr_factor)
+    
     # Loading protoset
     if(iter_group == 0):
         protoset = dict()
@@ -125,8 +124,11 @@ for iter_group in range(1): #nb_group
         # Save model every epoch for babysitting model
         if(gpu):
             # Save any model in cpu mode so it work on all platform
-            icarl_save = icarl.clone.cpu()
-        torch.save(icarl, work_path+'/model{}_{}'.format(iter_group, epoch))
+            icarl_copy = icarl.deepcopy()
+            icarl_copy = icar_copy.cpu()
+        else:
+            icarl_copy = icarl.deepcopy()
+        torch.save(icarl_copy, work_path+'/model{}_{}'.format(iter_group, epoch))
         # Construct Examplar Set and save it as a dict
         loader = DataLoader(data, batch_size = batch_size, shuffle = True)
         print('Constructing protoset')
@@ -141,5 +143,8 @@ for iter_group in range(1): #nb_group
         with open(protoset_orig_name, 'wb') as f:
             pickle.dump(protoset_orig, f)
             f.close()
+        testset = utils_data.MyDataset(test_path, 0, 2)
+        testloader = Dataloader(testset, batch_size = batch_size, shuffle = False)
+        icarl.feature_extract(testloader, test_path, iter_group, epoch)
     icarl.update_known(iter_group, mixing)
 log.close()

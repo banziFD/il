@@ -45,9 +45,9 @@ test_path = '/mnt/e/ilte'
 ###########################
 mixing = [(4, 7), (8, 5), (6, 2), (1, 3), (9, 0)] 
 #utils_data.prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val)
-protoset = pickle.load(open(test_path + '/protoset_0_9','rb'))
+protoset = pickle.load(open(test_path + '/protoset_0_19','rb'))
 testset = utils_data.MyDataset(test_path, 0, 2, protoset)
-model = torch.load(test_path + '/model9')
+model = torch.load(test_path + '/model0_19')
 loader = DataLoader(testset, batch_size = 16, shuffle = False)
 #model.feature_extract(loader, test_path)
 model.classify(protoset, test_path)
