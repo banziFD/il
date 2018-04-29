@@ -151,7 +151,7 @@ class iCaRL(torch.nn.Module):
             label_mem = label_mem.cpu()
         
         # Save data to test_path
-        torch.save(feature_mem, test_path + '/feature_{}_{}.'format(iter_group, epoch))
+        torch.save(feature_mem, test_path + '/feature_{}_{}'.format(iter_group, epoch))
         torch.save(label_mem, test_path + '/label_{}_{}'.format(iter_group, epoch))
 
     def update_known(self, iter_group, mixing):
@@ -197,7 +197,7 @@ class iCaRL(torch.nn.Module):
             if(self.gpu):
                 feature_mem[cl] = feature_mem[cl].cuda()
                 image_mem[cl] = image_mem[cl].cuda()
-                image_orig_mem[cl] = image_orig_mem.cuda()
+                image_orig_mem[cl] = image_orig_mem[cl].cuda()
         
         for step, (x, y, x_orig, y_sca) in enumerate(loader):
             x = Variable(x, requires_grad = False)
@@ -229,6 +229,6 @@ class iCaRL(torch.nn.Module):
             feature_mem[cl], image_mem[cl],image_orig_mem[cl], class_mean[cl])
             if(self.gpu):
                 protoset[cl] = protoset[cl].cpu()
-                protoset[cl] = protoset[cl].cpu()
+                protoset_orig[cl] = protoset_orig[cl].cpu()
             protoset_orig[cl] = protoset_orig[cl].numpy().astype(np.uint8)
         return protoset, protoset_orig
