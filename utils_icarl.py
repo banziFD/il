@@ -81,7 +81,7 @@ class iCaRL(torch.nn.Module):
         y = self.sigmoid(y)
         return y
 
-    def classify(self, protoset, test_path):
+    def classify(self, protoset, test_path, iter_group, epoch):
         known_cl = protoset.keys()
         class_mean = torch.zeros(self.total_cl, 512)
         for cl in known_cl:
@@ -92,10 +92,8 @@ class iCaRL(torch.nn.Module):
             feature = feature.view(self.nb_proto, -1)
             mean = torch.mean(feature, 0)
             class_mean[cl] = mean
-        feature = torch.load(test_path + '/feature')
-        label = torch.load(test_path + '/label')
-        print(feature.shape)
-        print(label.shape)
+        feature = torch.load(test_path + '/feature_{}_{}'.format(iter_group, epoch))
+        label = torch.load(test_path + '/label_{}_{}'.format(iter_group, epoch))
         assert feature.shape[0] == label.shape[0]
         count_true = 0
         count_all = feature.shape[0]
@@ -106,7 +104,6 @@ class iCaRL(torch.nn.Module):
             distance = distance * distance
             distance = torch.sum(distance, 1)
             dist, y_pred = torch.topk(distance, 1, largest = False)
-            print(y_pred[0], label[index])
             if(y_pred[0] == label[index]):
                 count_true += 1
         print(count_true / count_all)
