@@ -1,19 +1,14 @@
 import numpy as np
 import torch
-from torch.autograd import Variable
 import torchvision.transforms as transforms
 
 def train(icarl, optimizer, scheduler, loss_fn, loader):
     # known_mask & unknown_mask
-    known = Variable(icarl.known.clone(), requires_grad = False)
-    unknown = Variable(icarl.unknown.clone(), requires_grad = False)
-
-    scheduler.step()
+    known = icarl.known.clone()
+    unknown = icarl.unknown.clone()
     error_train = 0
     for step, (x, y, x_orig, y_sca) in enumerate(loader):
-        x = Variable(x)
-        y = Variable(y.float(), requires_grad = False)
-
+        y = Tensor(y.float(), requires_grad = False)
         # Load data to gpu if needed
         if(icarl.gpu):
             x = x.cuda()
@@ -23,11 +18,10 @@ def train(icarl, optimizer, scheduler, loss_fn, loader):
         
         #Forward prop
         y_pred = icarl(x)
-
+        y_pred_clone = Tensor(y_pred.clone(), requires_grad = False)
         ### loss function ###
         # classification term + distillation term
-        y_target = unknown * y + known * y_pred.detach()
-        y_target = y_target.detach()
+        y_target = unknown * y + known * y_pred_clone
         loss = loss_fn(y_pred, y_target)
 
         # backprop and update model
@@ -39,9 +33,8 @@ def train(icarl, optimizer, scheduler, loss_fn, loader):
         
 def val(icarl, loss_fn, loader_val):
     # known_mask & unknown_mask
-    known = Variable(icarl.known.clone(), requires_grad = False)
-    unknown = Variable(icarl.unknown.clone(), requires_grad = False)
-
+    known = icarl.known.clone()
+    unknown = icarl.unknown.clone()
     error_val = 0
     for step, (x, y, x_orig, y_sca) in enumerate(loader_val):
         x = Variable(x, requires_grad = False)
@@ -52,8 +45,8 @@ def val(icarl, loss_fn, loader_val):
             known = known.cuda()
             unknown = unknown.cuda()
         y_pred = icarl(x)
-        y_target = unknown * y + known * y_pred.detach()
-        y_target = y_target.detach()
+        y_pred_clone = Tensor(y_pred.clone(), requires_grad = False)
+        y_target = unknown * y + known * y_pred_clone
         loss_val = loss_fn(y_pred, y_target)
         error_val = error_val + loss_val.data[0]      
     return error_val
@@ -66,8 +59,8 @@ class iCaRL(torch.nn.Module):
         self.nb_proto = param['nb_proto']
         self.gpu = param['gpu']
         self.total_cl = param['nb_cl'] * param['nb_group']
-        self.known = torch.zeros(self.total_cl)
-        self.unknown = torch.ones(self.total_cl)
+        self.known = torch.zeros(self.total_cl, requires_grad = False)
+        self.unknown = torch.ones(self.total_cl, requires_grad = False)
         self.feature_net = feature_net
         self.linear = torch.nn.Linear(512, self.total_cl)
         self.sigmoid = torch.nn.Sigmoid()
@@ -83,15 +76,19 @@ class iCaRL(torch.nn.Module):
 
     def classify(self, protoset, test_path, iter_group, epoch):
         known_cl = protoset.keys()
-        class_mean = torch.zeros(self.total_cl, 512)
+        class_mean = torch.zeros(self.total_cl, 512, requires_grad = False)
+        # compute current mean feature for each class
         for cl in known_cl:
             proto_image = protoset[cl]
-            x = Variable(proto_image, requires_grad = False)
-            feature = self.feature_net(x)
-            feature = feature.data
-            feature = feature.view(self.nb_proto, -1)
-            mean = torch.mean(feature, 0)
+            x = Tensor(proto_image, requires_grad = False)
+            mean = self.feature_net(x)
+            mean = torch.mean(mean, 0)
             class_mean[cl] = mean
+        # normalize class_mean
+        norm = torch.norm(class_mean, 2, 1, keepdim = True)
+        class_mean = class_mean / norm
+
+        # load computed feature for test
         feature = torch.load(test_path + '/feature_{}_{}'.format(iter_group, epoch))
         label = torch.load(test_path + '/label_{}_{}'.format(iter_group, epoch))
         assert feature.shape[0] == label.shape[0]
@@ -117,8 +114,8 @@ class iCaRL(torch.nn.Module):
         for step, (x, y, x_orig, y_sca) in enumerate(loader):
             test_count += y_sca.shape[0]
         # Pre-allocate memory 
-        label_mem = torch.zeros(test_count)
-        feature_mem = torch.zeros(test_count, 512)
+        label_mem = torch.zeros(test_count, requires_grad = False)
+        feature_mem = torch.zeros(test_count, 512, requires_grad = False)
         if(self.gpu):
             label_mem = label_mem.cuda()
             feature_mem = feature_mem.cuda()
@@ -126,15 +123,13 @@ class iCaRL(torch.nn.Module):
         # Extract features and save into label_mem/feature_mem
         test_count = 0
         for step, (x, y, x_orig, y_sca) in enumerate(loader):
-            x = Variable(x, requires_grad = False)
+            x = Tensor(x, requires_grad = False)
             if(self.gpu):
                 x = x.cuda()
                 y_sca = y_sca.cuda()
             
             # Extract features
             feature = feature_net(x)
-            feature = feature.data
-            feature = feature.view(feature.shape[0], -1)
 
             # Save features
             for i in range(feature.shape[0]):
@@ -197,13 +192,12 @@ class iCaRL(torch.nn.Module):
                 image_orig_mem[cl] = image_orig_mem[cl].cuda()
         
         for step, (x, y, x_orig, y_sca) in enumerate(loader):
-            x = Variable(x, requires_grad = False)
+            x = Tensor(x, requires_grad = False)
             if(self.gpu):
                 x = x.cuda()
                 x_orig = x_orig.cuda()
                 y_sca = y_sca.cuda()
             feature = feature_net(x)
-            feature = feature.data
             feature = feature.view(feature.shape[0], -1)
             # feature = torch.rand(x.shape[0], 512)
             x = x.data

@@ -40,8 +40,8 @@ param = {
 
 ######### Paths  ##########
 # Working space
-# dataset_path = "/mnt/e/dataset/cifar-10-python"
-# work_path = '/mnt/e/ilex'
+# dataset_path = "d:/dataset/cifar-10-python"
+# work_path = 'd:/ilex'
 #dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-batches-py"
 #work_path = '/home/spyisflying/ilex'
 dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-python"
