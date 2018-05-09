@@ -21,7 +21,7 @@ epochs = 20                        # Total number of epochs
 lr = 0.001                         # Initial learning rate
 lr_milestones = [4,8,12,16,20]   # Epochs where learning rate gets decreased
 lr_factor = 0.05                   # Learning rate decrease factor
-gpu =True                        # Use gpu for training
+gpu = False                        # Use gpu for training
 wght_decay = 0.00001               # Weight Decay
 param = {
     'batch_size': batch_size,           
@@ -40,13 +40,13 @@ param = {
 
 ######### Paths  ##########
 # Working space
-# dataset_path = "d:/dataset/cifar-10-python"
-# work_path = 'd:/ilex'
+dataset_path = "d:/dataset/cifar-10-python"
+work_path = 'd:/ilex'
 #dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-batches-py"
 #work_path = '/home/spyisflying/ilex'
-dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-python"
-work_path = '/home/spyisflying/ilex'
-test_path = '/home/spyisflying/ilte'
+# dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-python"
+# work_path = '/home/spyisflying/ilex'
+# test_path = '/home/spyisflying/ilte'
 ###########################
 
 # Read label and random mixing
@@ -60,7 +60,7 @@ print(mixing)
 ### Preparing the files for the training/validation ###
 print("Creating training/validation data")
 # run once for specific mixing
-utils_data.prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val)
+# utils_data.prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val)
 
 ### Start of the main algorithm ###
 print('apply training algorithm...')

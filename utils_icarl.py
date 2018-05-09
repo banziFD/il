@@ -8,7 +8,8 @@ def train(icarl, optimizer, scheduler, loss_fn, loader):
     unknown = icarl.unknown.clone()
     error_train = 0
     for step, (x, y, x_orig, y_sca) in enumerate(loader):
-        y = Tensor(y.float(), requires_grad = False)
+        x.requires_grad = False
+        y.requires_grad = False
         # Load data to gpu if needed
         if(icarl.gpu):
             x = x.cuda()
@@ -18,7 +19,8 @@ def train(icarl, optimizer, scheduler, loss_fn, loader):
         
         #Forward prop
         y_pred = icarl(x)
-        y_pred_clone = Tensor(y_pred.clone(), requires_grad = False)
+        y_pred_clone = y_pred.clone()
+        y_pred_clone.requires_grad = False
         ### loss function ###
         # classification term + distillation term
         y_target = unknown * y + known * y_pred_clone
@@ -37,15 +39,16 @@ def val(icarl, loss_fn, loader_val):
     unknown = icarl.unknown.clone()
     error_val = 0
     for step, (x, y, x_orig, y_sca) in enumerate(loader_val):
-        x = Variable(x, requires_grad = False)
-        y = Variable(y.float(), requires_grad = False)
+        x.requires_grad = False
+        y.requires_grad = False
         if(icarl.gpu):
             x = x.cuda()
             y = y.cuda()
             known = known.cuda()
             unknown = unknown.cuda()
         y_pred = icarl(x)
-        y_pred_clone = Tensor(y_pred.clone(), requires_grad = False)
+        y_pred_clone = y_pred.clone()
+        y_pred_clone.requires_grad = False
         y_target = unknown * y + known * y_pred_clone
         loss_val = loss_fn(y_pred, y_target)
         error_val = error_val + loss_val.data[0]      
@@ -80,7 +83,8 @@ class iCaRL(torch.nn.Module):
         # compute current mean feature for each class
         for cl in known_cl:
             proto_image = protoset[cl]
-            x = Tensor(proto_image, requires_grad = False)
+            x = proto_image
+            x.requires_grad = False
             mean = self.feature_net(x)
             mean = torch.mean(mean, 0)
             class_mean[cl] = mean
@@ -123,7 +127,7 @@ class iCaRL(torch.nn.Module):
         # Extract features and save into label_mem/feature_mem
         test_count = 0
         for step, (x, y, x_orig, y_sca) in enumerate(loader):
-            x = Tensor(x, requires_grad = False)
+            x.requires_grad = False
             if(self.gpu):
                 x = x.cuda()
                 y_sca = y_sca.cuda()
