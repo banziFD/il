@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 
-def train(icarl, optimizer, loss_fn, loader):
+def train(icarl, icarl_pre, optimizer, loss_fn, loader):
     # known_mask & unknown_mask
     known = icarl.known.clone()
     unknown = icarl.unknown.clone()
