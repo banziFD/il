@@ -1,8 +1,7 @@
 import numpy as np
 import torch
-import torchvision.transforms as transforms
 
-def train(icarl, optimizer, scheduler, loss_fn, loader):
+def train(icarl, optimizer, loss_fn, loader):
     # known_mask & unknown_mask
     known = icarl.known.clone()
     unknown = icarl.unknown.clone()
@@ -10,20 +9,43 @@ def train(icarl, optimizer, scheduler, loss_fn, loader):
     for step, (x, y, x_orig, y_sca) in enumerate(loader):
         x.requires_grad = False
         y.requires_grad = False
-        # Load data to gpu if needed
-        if(icarl.gpu):
-            x = x.cuda()
-            y = y.cuda()
-            known = known.cuda()
-            unknown = unknown.cuda()
+
+        # seperate known classes with unknown classes
+        known_count = torch.sum(y * known)
+        x_known = torch.zeros(known_count, 3, 224, 224)
+        y_known = torch.zeros(known_count)
+        i, j = 0, 0
+        for k in range(y.shape[0]):
+            if(known[y_sca[k]] == 1):
+                x_known[i] = x[k]
+                y_known[i] = y[k]
+                i += 1
+            else:
+                x_unknown[j] = x[k]
+                y_unknown[j] = y[k]
+                j += 1
         
-        #Forward prop
-        y_pred = icarl(x)
-        y_pred_clone = y_pred.clone()
-        y_pred_clone.requires_grad = False
+        
+        # Load data to gpu memory if cuda is availiable
+        if(icarl.gpu):
+            icarl = icarl.cuda()
+            icarl_pre = icarl_pre.cuda()
+            loss_fn = loss_fn.cuda()
+            x_known = x_known.cuda()
+            y_known = y_known.cuda()
+            x_unknown = x_unknown.cuda()
+            y_unknown = y_known.cuda()
+        
+        # Forward prop, modified x means we reorder original images
+        # by (known, unknown)
+        x_modify = torch.cat((x_known, x_unknown), 0)
+        y_pred = icarl(x_modify)
+
         ### loss function ###
         # classification term + distillation term
-        y_target = unknown * y + known * y_pred_clone
+        y_diss = icarl_pre(x_known)
+        y_class = y_known
+        y_target = torch.cat((y_diss, y_class), 0)
         loss = loss_fn(y_pred, y_target)
 
         # backprop and update model
@@ -34,25 +56,7 @@ def train(icarl, optimizer, scheduler, loss_fn, loader):
     return error_train
         
 def val(icarl, loss_fn, loader_val):
-    # known_mask & unknown_mask
-    known = icarl.known.clone()
-    unknown = icarl.unknown.clone()
-    error_val = 0
-    for step, (x, y, x_orig, y_sca) in enumerate(loader_val):
-        x.requires_grad = False
-        y.requires_grad = False
-        if(icarl.gpu):
-            x = x.cuda()
-            y = y.cuda()
-            known = known.cuda()
-            unknown = unknown.cuda()
-        y_pred = icarl(x)
-        y_pred_clone = y_pred.clone()
-        y_pred_clone.requires_grad = False
-        y_target = unknown * y + known * y_pred_clone
-        loss_val = loss_fn(y_pred, y_target)
-        error_val = error_val + loss_val.data[0]      
-    return error_val
+    pass
 
 class iCaRL(torch.nn.Module):
     def __init__(self, param, feature_net, label_dict):
@@ -62,6 +66,7 @@ class iCaRL(torch.nn.Module):
         self.nb_proto = param['nb_proto']
         self.gpu = param['gpu']
         self.total_cl = param['nb_cl'] * param['nb_group']
+        
         self.known = torch.zeros(self.total_cl, requires_grad = False)
         self.unknown = torch.ones(self.total_cl, requires_grad = False)
         self.feature_net = feature_net

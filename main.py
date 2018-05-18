@@ -7,7 +7,6 @@ import numpy as np
 import torch
 import copy
 from torch.utils.data import DataLoader
-from torch.autograd import Variable
 from torch.optim.lr_scheduler import MultiStepLR
 
 ######### Modifiable Settings ##########
@@ -60,7 +59,7 @@ print(mixing)
 ### Preparing the files for the training/validation ###
 print("Creating training/validation data")
 # run once for specific mixing
-# utils_data.prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val)
+utils_data.prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val)
 
 ### Start of the main algorithm ###
 print('apply training algorithm...')
@@ -70,11 +69,6 @@ feature_net = utils_resnet.Resnet(pretrained = True)
 icarl = utils_icarl.iCaRL(param, feature_net, label_dict)
 loss_fn = torch.nn.BCELoss(size_average = False)
 
-# Load model to gpu if device is available
-if(gpu):
-    icarl = icarl.cuda()
-    loss_fn = loss_fn.cuda()
-
 # Recording traing process in log file
 log = open(work_path + '/log.txt', 'ab', 0)
 log.write('epoch time training_loss validation_loss \n'.encode())
@@ -83,7 +77,7 @@ log.write('epoch time training_loss validation_loss \n'.encode())
 for iter_group in range(1): #nb_group
     # Training tools
     optimizer = torch.optim.Adam(icarl.parameters(), lr = lr, weight_decay = wght_decay)
-    scheduler = MultiStepLR(optimizer, milestones = lr_milestones, gamma = lr_factor)
+    # scheduler = MultiStepLR(optimizer, milestones = lr_milestones, gamma = lr_factor)
     
     # Loading protoset
     if(iter_group == 0):
@@ -108,12 +102,11 @@ for iter_group in range(1): #nb_group
         start = time.time()
         # Train
         error_train, error_val = 0, 0
-        error_train = utils_icarl.train(icarl, optimizer, scheduler, loss_fn, loader)
+        error_train = utils_icarl.train(icarl, optimizer, loss_fn, loader)
         # Validate
         #error_val = utils_icarl.val(icarl, loss_fn, loader_val)
         # Print monitor info
-        current_line = [epoch, time.time() - start, 
-        error_train / 600, error_val / 20]
+        current_line = [epoch, time.time() - start, error_train / 600, error_val / 20]
         print(current_line)
         current_line = str(current_line)[1:-1] + '\n'
         log.write(current_line.encode())
