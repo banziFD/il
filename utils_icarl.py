@@ -11,9 +11,13 @@ def train(icarl, optimizer, loss_fn, loader):
         y.requires_grad = False
 
         # seperate known classes with unknown classes
-        known_count = torch.sum(y * known)
+        known_count = int(torch.sum(y * known).item())
+        unknown_count = x.shape[0] - known_count
         x_known = torch.zeros(known_count, 3, 224, 224)
-        y_known = torch.zeros(known_count)
+        y_known = torch.zeros(known_count, 10)
+        x_unknown = torch.zeros(unknown_count, 3, 224, 224)
+        y_unknown = torch.zeros(unknown_count, 10)
+
         i, j = 0, 0
         for k in range(y.shape[0]):
             if(known[y_sca[k]] == 1):
@@ -66,7 +70,7 @@ class iCaRL(torch.nn.Module):
         self.nb_proto = param['nb_proto']
         self.gpu = param['gpu']
         self.total_cl = param['nb_cl'] * param['nb_group']
-        
+
         self.known = torch.zeros(self.total_cl, requires_grad = False)
         self.unknown = torch.ones(self.total_cl, requires_grad = False)
         self.feature_net = feature_net
@@ -170,9 +174,11 @@ class iCaRL(torch.nn.Module):
         value, index = torch.topk(distance, nb_proto, largest = False)
         protoset = image_mem[index].clone()
         protoset_orig = image_orig_mem[index].clone()
-        return protoset, protoset_orig
+        return (protoset, protoset_orig)
     
-    def construct_proto(self, iter_group, mixing, loader, protoset, protoset_orig):
+    def construct_proto(self, iter_group, mixing, loader, protoset):
+        # Protoset will be a dictionary of tuples, where keys are class labels, values are tuple of (image, image_orig, feature_mean
+
         feature_net = self.feature_net
         new_cl = mixing[iter_group]
         feature_mem = dict()
@@ -225,10 +231,10 @@ class iCaRL(torch.nn.Module):
         # Choose image as protoset example
         nb_proto = self.nb_proto
         for cl in new_cl:
-            protoset[cl], protoset_orig[cl] = self.choose_top(nb_proto, 
+            protoset[cl] = self.choose_top(nb_proto, 
             feature_mem[cl], image_mem[cl],image_orig_mem[cl], class_mean[cl])
             if(self.gpu):
-                protoset[cl] = protoset[cl].cpu()
-                protoset_orig[cl] = protoset_orig[cl].cpu()
-            protoset_orig[cl] = protoset_orig[cl].numpy().astype(np.uint8)
-        return protoset, protoset_orig
+                protoset[cl][0] = protoset[cl][0].cpu()
+                protoset[cl][1] = protoset[cl][1].cpu()
+            protoset_orig[cl][1] = protoset_orig[cl][1].numpy().astype(np.uint8)
+        return protoset

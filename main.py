@@ -59,7 +59,7 @@ print(mixing)
 ### Preparing the files for the training/validation ###
 print("Creating training/validation data")
 # run once for specific mixing
-utils_data.prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val)
+# utils_data.prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val)
 
 ### Start of the main algorithm ###
 print('apply training algorithm...')
@@ -82,18 +82,13 @@ for iter_group in range(1): #nb_group
     # Loading protoset
     if(iter_group == 0):
         protoset = dict()
-        protoset_orig = dict()
     else:
         protoset_name = work_path + '/protoset_{}_{}'.format(iter_group - 1, epochs - 1)
-        protoset_orig_name = work_path + '/protoset_orig_{}_{}'.format(iter_group - 1, epochs - 1)
         with open(protoset_name, 'rb') as f:
             protoset = pickle.load(f)
             f.close()
-        with open(protoset_orig_name, 'rb') as f:
-            protoset_orig = pickle.load(f)
-            f.close()
     # Loading trainging data by group
-    data = utils_data.MyDataset(work_path, iter_group, 0, protoset_orig)
+    data = utils_data.MyDataset(work_path, iter_group, 0, protoset)
     loader = DataLoader(data, batch_size = batch_size, shuffle = True)
     # Loading validation data by group
     data_val = utils_data.MyDataset(work_path, iter_group, 1)
@@ -122,16 +117,11 @@ for iter_group in range(1): #nb_group
         # Construct Examplar Set and save it as a dict
         loader = DataLoader(data, batch_size = batch_size, shuffle = True)
         print('Constructing protoset')
-        protoset, protoset_orig = icarl.construct_proto(iter_group, 
-        mixing, loader, protoset, protoset_orig)
+        protoset = icarl.construct_proto(iter_group, 
+        mixing, loader, protoset)
         protoset_name = work_path + '/protoset_{}_{}'.format(iter_group, epoch)
-        protoset_orig_name = work_path + '/protoset_orig_{}_{}'.format(
-            iter_group, epoch)
         with open(protoset_name, 'wb') as f:
             pickle.dump(protoset, f)
-            f.close()
-        with open(protoset_orig_name, 'wb') as f:
-            pickle.dump(protoset_orig, f)
             f.close()
         testset = utils_data.MyDataset(work_path, 0, 2)
         testloader = DataLoader(testset, batch_size = batch_size, shuffle = False)

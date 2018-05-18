@@ -150,7 +150,7 @@ class MyDataset(torch.utils.data.Dataset):
             if(any(protoset)):
                 for cl in protoset:
                     proto_labels = np.ones(20) * cl
-                    proto_images = protoset[cl]
+                    proto_images = protoset[cl][1]
                     self.images = np.concatenate((self.images, proto_images), 
                     axis = 0)
                     self.labels = np.concatenate((self.labels, proto_labels), 
@@ -168,7 +168,7 @@ class MyDataset(torch.utils.data.Dataset):
         if(mode == 3):
             for cl in protoset:
                 proto_labels = np.ones(20) * cl
-                proto_images = protoset[cl]
+                proto_images = protoset[cl][1]
                 self.images = proto_images
                 self.labels = proto_labels      
                 
