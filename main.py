@@ -11,7 +11,7 @@ from torch.optim.lr_scheduler import MultiStepLR
 
 ######### Modifiable Settings ##########
 # load all params into dict for convience
-batch_size = 64                    # Batch size
+batch_size = 16                    # Batch size
 nb_val = 20                        # Validation sample per class
 nb_cl = 2                          # Classes per group
 nb_group = 5                       # Number of groups
@@ -20,7 +20,7 @@ epochs = 20                        # Total number of epochs
 lr = 0.001                         # Initial learning rate
 lr_milestones = [4,8,12,16,20]   # Epochs where learning rate gets decreased
 lr_factor = 0.05                   # Learning rate decrease factor
-gpu = True                        # Use gpu for training
+gpu = False                        # Use gpu for training
 wght_decay = 0.00001               # Weight Decay
 param = {
     'batch_size': batch_size,           
@@ -39,13 +39,14 @@ param = {
 
 ######### Paths  ##########
 # Working space
-# dataset_path = "d:/dataset/cifar-10-python"
-# work_path = 'd:/ilex'
+dataset_path = "d:/dataset/cifar-10-python"
+testset_path = 'd:/ilte'
+work_path = 'd:/ilex'
 # dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-batches-py"
 # work_path = '/home/spyisflying/ilex'
-dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-python"
-work_path = '/home/spyisflying/ilex'
-test_path = '/home/spyisflying/ilte'
+# dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-python"
+# work_path = '/home/spyisflying/ilex'
+# test_path = '/home/spyisflying/ilte'
 ###########################
 
 # Read label and random mixing
@@ -59,7 +60,7 @@ print(mixing)
 ### Preparing the files for the training/validation ###
 print("Creating training/validation data")
 # run once for specific mixing
-utils_data.prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val)
+# utils_data.prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val)
 
 ### Start of the main algorithm ###
 print('apply training algorithm...')
@@ -82,11 +83,14 @@ for iter_group in range(1): #nb_group
     # Loading protoset
     if(iter_group == 0):
         protoset = dict()
+        icarl_pre = None
     else:
-        protoset_name = work_path + '/protoset_{}_{}'.format(iter_group - 1, epochs - 1)
+        protoset_name = work_path + '/protoset_{}'.format(iter_group - 1)
+        icarl_pre_name = work_path + '/model_{}'.format(iter_group - 1)
         with open(protoset_name, 'rb') as f:
             protoset = pickle.load(f)
             f.close()
+        icarl_pre = torch.load(icarl_pre_name)
     # Loading trainging data by group
     data = utils_data.MyDataset(work_path, iter_group, 0, protoset)
     loader = DataLoader(data, batch_size = batch_size, shuffle = True)
@@ -97,7 +101,7 @@ for iter_group in range(1): #nb_group
         start = time.time()
         # Train
         error_train, error_val = 0, 0
-        error_train = utils_icarl.train(icarl, optimizer, loss_fn, loader)
+        error_train = utils_icarl.train(icarl, icarl_pre, optimizer, loss_fn, loader)
         # Validate
         #error_val = utils_icarl.val(icarl, loss_fn, loader_val)
         # Print monitor info
@@ -107,23 +111,26 @@ for iter_group in range(1): #nb_group
         log.write(current_line.encode())
         print('complete {}% on group {}'.format(
             (epoch + 1) * 100 / epochs, iter_group))
-        # Construct Examplar Set and save it as a dict
-        loader = DataLoader(data, batch_size = batch_size, shuffle = True)
-        print('Constructing protoset')
-        protoset = icarl.construct_proto(iter_group, 
-        mixing, loader, protoset)
-        protoset_name = work_path + '/protoset_{}_{}'.format(iter_group, epoch)
-        with open(protoset_name, 'wb') as f:
-            pickle.dump(protoset, f)
-            f.close()
-        testset = utils_data.MyDataset(work_path, 0, 2)
-        testloader = DataLoader(testset, batch_size = batch_size, shuffle = False)
-        icarl.feature_extract(testloader, test_path, iter_group, epoch)
-    # Save model every epoch for babysitting model
-        if(gpu):
-            # Save any model in cpu mode so it work on all platform
-            icarl_copy = copy.deepcopy(icarl)
-            icarl_copy = icarl_copy.cpu()
-        torch.save(icarl_copy, work_path + '/model{}'.format(iter_group)
+    
+    # Save model every group_iter for babysitting model
+    icarl_copy = copy.deepcopy(icarl)
+    if(gpu):
+        # Save any model in cpu mode so it work on all platform
+        icarl_copy = icarl_copy.cpu()
+    torch.save(icarl_copy, work_path + '/model{}'.format(iter_group))
+    
+    # Construct Examplar Set and save it as a dict
+    loader = DataLoader(data, batch_size = batch_size, shuffle = True)
+    print('Constructing protoset')
+    protoset = icarl.construct_proto(iter_group, 
+    mixing, loader, protoset)
+    protoset_name = work_path + '/protoset_{}'.format(iter_group)
+    with open(protoset_name, 'wb') as f:
+        pickle.dump(protoset, f)
+        f.close()
+    
+    testset = utils_data.MyDataset(work_path, 0, 2)
+    testloader = DataLoader(testset, batch_size = batch_size, shuffle = False)
+    icarl.feature_extract(testloader, test_path, iter_group)
     icarl.update_known(iter_group, mixing)
 log.close()

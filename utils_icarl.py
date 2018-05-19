@@ -47,14 +47,17 @@ def train(icarl, icarl_pre, optimizer, loss_fn, loader):
 
         ### loss function ###
         # classification term + distillation term
-        y_diss = icarl_pre(x_known)
-        y_class = y_known
-        y_target = torch.cat((y_diss, y_class), 0)
+        if(icarl_pre != None):
+            y_diss = icarl_pre(x_known)
+            y_class = y_known
+            y_target = torch.cat((y_diss, y_class), 0)
+        else:
+            y_target = y_unknown
         loss = loss_fn(y_pred, y_target)
 
         # backprop and update model
         optimizer.zero_grad()
-        error_train = error_train + loss.data[0]
+        error_train = error_train + loss.data.item()
         loss.backward()
         optimizer.step()
     return error_train
@@ -119,7 +122,7 @@ class iCaRL(torch.nn.Module):
         print(count_true / count_all)
             
 
-    def feature_extract(self, loader, test_path, iter_group, epoch):
+    def feature_extract(self, loader, test_path, iter_group):
         # nearest-mean-of-examplars classification based on
         # feature map extracted by resnet
         feature_net = self.feature_net
@@ -156,8 +159,8 @@ class iCaRL(torch.nn.Module):
             label_mem = label_mem.cpu()
         
         # Save data to test_path
-        torch.save(feature_mem, test_path + '/feature_{}_{}'.format(iter_group, epoch))
-        torch.save(label_mem, test_path + '/label_{}_{}'.format(iter_group, epoch))
+        torch.save(feature_mem, test_path + '/feature_{}'.format(iter_group))
+        torch.save(label_mem, test_path + '/label_{}'.format(iter_group))
 
     def update_known(self, iter_group, mixing):
         for known_cl in mixing[iter_group]:
