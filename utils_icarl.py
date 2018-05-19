@@ -46,10 +46,10 @@ def train(icarl, icarl_pre, optimizer, loss_fn, loader):
 
         ### loss function ###
         # classification term + distillation term
-        if(icarl_pre != None):
+        if(icarl_pre != None and known_count != 0):
             y_diss = icarl_pre(x_known)
             y_diss = y_diss.detach()
-            y_class = y_known
+            y_class = y_unknown
             y_target = torch.cat((y_diss, y_class), 0)
         else:
             y_target = y_unknown
