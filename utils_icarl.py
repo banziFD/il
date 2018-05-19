@@ -9,7 +9,6 @@ def train(icarl, icarl_pre, optimizer, loss_fn, loader):
     for step, (x, y, x_orig, y_sca) in enumerate(loader):
         x.requires_grad = False
         y.requires_grad = False
-
         # seperate known classes with unknown classes
         known_count = int(torch.sum(y * known).item())
         unknown_count = x.shape[0] - known_count
@@ -33,13 +32,13 @@ def train(icarl, icarl_pre, optimizer, loss_fn, loader):
         # Load data to gpu memory if cuda is availiable
         if(icarl.gpu):
             icarl = icarl.cuda()
-            icarl_pre = icarl_pre.cuda()
+            if (icarl_pre != None):
+                icarl_pre = icarl_pre.cuda()
             loss_fn = loss_fn.cuda()
             x_known = x_known.cuda()
             y_known = y_known.cuda()
             x_unknown = x_unknown.cuda()
-            y_unknown = y_known.cuda()
-        
+            y_unknown = y_unknown.cuda()
         # Forward prop, modified x means we reorder original images
         # by (known, unknown)
         x_modify = torch.cat((x_known, x_unknown), 0)
@@ -49,6 +48,7 @@ def train(icarl, icarl_pre, optimizer, loss_fn, loader):
         # classification term + distillation term
         if(icarl_pre != None):
             y_diss = icarl_pre(x_known)
+            y_diss = y_diss.detach()
             y_class = y_known
             y_target = torch.cat((y_diss, y_class), 0)
         else:
@@ -89,15 +89,17 @@ class iCaRL(torch.nn.Module):
         y = self.sigmoid(y)
         return y
 
-    def classify(self, protoset, test_path, iter_group, epoch):
+    def classify(self, protoset, test_path, iter_group):
         known_cl = protoset.keys()
         class_mean = torch.zeros(self.total_cl, 512, requires_grad = False)
         # compute current mean feature for each class
         for cl in known_cl:
-            proto_image = protoset[cl]
+            proto_image = protoset[cl][0]
+            if(self.gpu):
+                proto_image = proto_image.cuda()
             x = proto_image
             x.requires_grad = False
-            mean = self.feature_net(x)
+            mean = self.feature_net(x).detach()
             mean = torch.mean(mean, 0)
             class_mean[cl] = mean
         # normalize class_mean
@@ -105,8 +107,8 @@ class iCaRL(torch.nn.Module):
         class_mean = class_mean / norm
 
         # load computed feature for test
-        feature = torch.load(test_path + '/feature_{}_{}'.format(iter_group, epoch))
-        label = torch.load(test_path + '/label_{}_{}'.format(iter_group, epoch))
+        feature = torch.load(test_path + '/feature_{}'.format(iter_group))
+        label = torch.load(test_path + '/label_{}'.format(iter_group))
         assert feature.shape[0] == label.shape[0]
         count_true = 0
         count_all = feature.shape[0]
@@ -117,9 +119,11 @@ class iCaRL(torch.nn.Module):
             distance = distance * distance
             distance = torch.sum(distance, 1)
             dist, y_pred = torch.topk(distance, 1, largest = False)
+            y_pred = y_pred.int()
             if(y_pred[0] == label[index]):
                 count_true += 1
-        print(count_true / count_all)
+        
+        print('Accuracy: ',count_true / count_all)
             
 
     def feature_extract(self, loader, test_path, iter_group):
@@ -146,13 +150,13 @@ class iCaRL(torch.nn.Module):
             
             # Extract features
             feature = feature_net(x)
-
+            feature = feature.detach()
             # Save features
             for i in range(feature.shape[0]):
                 label_mem[test_count] = y_sca[i]
                 feature_mem[test_count] = feature[i]
                 test_count += 1
-        
+        label_mem = label_mem.int()
         # Move every data back to cpu before it being saved
         if(self.gpu):
             feature_mem = feature_mem.cpu()
@@ -177,7 +181,7 @@ class iCaRL(torch.nn.Module):
         value, index = torch.topk(distance, nb_proto, largest = False)
         protoset = image_mem[index].clone()
         protoset_orig = image_orig_mem[index].clone()
-        return (protoset, protoset_orig)
+        return [protoset, protoset_orig]
     
     def construct_proto(self, iter_group, mixing, loader, protoset):
         # Protoset will be a dictionary of tuples, where keys are class labels, values are tuple of (image, image_orig, feature_mean
@@ -194,11 +198,12 @@ class iCaRL(torch.nn.Module):
         # Extract features and save it into feature_mem
         for step, (x, y, x_orig, y_sca) in enumerate(loader):
             for cl in y_sca:
+                cl = int(cl.item())
                 if cl in class_count:
                     class_count[cl] += 1
                 else:
                     class_count[cl] = 1
-        
+
         # Pre-allocate memory
         for cl in class_count:
             feature_mem[cl] = torch.zeros(class_count[cl], 512)
@@ -207,30 +212,25 @@ class iCaRL(torch.nn.Module):
             if(self.gpu):
                 feature_mem[cl] = feature_mem[cl].cuda()
                 image_mem[cl] = image_mem[cl].cuda()
-                image_orig_mem[cl] = image_orig_mem[cl].cuda()
-        
+                image_orig_mem[cl] = image_orig_mem[cl].cuda()  
         for step, (x, y, x_orig, y_sca) in enumerate(loader):
-            x = Tensor(x, requires_grad = False)
             if(self.gpu):
                 x = x.cuda()
                 x_orig = x_orig.cuda()
                 y_sca = y_sca.cuda()
             feature = feature_net(x)
+            feature = feature.detach()
             feature = feature.view(feature.shape[0], -1)
-            # feature = torch.rand(x.shape[0], 512)
-            x = x.data
             for index in range(y.shape[0]):
-                cl = y_sca[index]
+                cl = y_sca[index].item()
                 feature_mem[cl][class_count[cl] - 1] = feature[index]
                 image_mem[cl][class_count[cl] - 1] = x[index]
                 image_orig_mem[cl][class_count[cl] - 1] = x_orig[index]
                 class_count[cl] -= 1
-
         # Compute class_mean for pick examplar
         for cl in new_cl:
             mean = torch.mean(feature_mem[cl], 0)
             class_mean[cl] = mean
-        
         # Choose image as protoset example
         nb_proto = self.nb_proto
         for cl in new_cl:
@@ -239,5 +239,6 @@ class iCaRL(torch.nn.Module):
             if(self.gpu):
                 protoset[cl][0] = protoset[cl][0].cpu()
                 protoset[cl][1] = protoset[cl][1].cpu()
-            protoset_orig[cl][1] = protoset_orig[cl][1].numpy().astype(np.uint8)
+            protoset[cl][1] = protoset[cl][1].numpy().astype(np.uint8)
+            protoset[cl] = tuple(protoset[cl])
         return protoset

@@ -11,7 +11,7 @@ from torch.optim.lr_scheduler import MultiStepLR
 
 ######### Modifiable Settings ##########
 # load all params into dict for convience
-batch_size = 16                    # Batch size
+batch_size = 64                    # Batch size
 nb_val = 20                        # Validation sample per class
 nb_cl = 2                          # Classes per group
 nb_group = 5                       # Number of groups
@@ -20,7 +20,7 @@ epochs = 20                        # Total number of epochs
 lr = 0.001                         # Initial learning rate
 lr_milestones = [4,8,12,16,20]   # Epochs where learning rate gets decreased
 lr_factor = 0.05                   # Learning rate decrease factor
-gpu = False                        # Use gpu for training
+gpu = True                        # Use gpu for training
 wght_decay = 0.00001               # Weight Decay
 param = {
     'batch_size': batch_size,           
@@ -39,14 +39,14 @@ param = {
 
 ######### Paths  ##########
 # Working space
-dataset_path = "d:/dataset/cifar-10-python"
-testset_path = 'd:/ilte'
-work_path = 'd:/ilex'
+# dataset_path = "d:/dataset/cifar-10-python"
+# testset_path = 'd:/ilte'
+# work_path = 'd:/ilex'
 # dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-batches-py"
 # work_path = '/home/spyisflying/ilex'
-# dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-python"
-# work_path = '/home/spyisflying/ilex'
-# test_path = '/home/spyisflying/ilte'
+dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-python"
+work_path = '/home/spyisflying/ilex'
+test_path = '/home/spyisflying/ilte'
 ###########################
 
 # Read label and random mixing
@@ -117,7 +117,7 @@ for iter_group in range(1): #nb_group
     if(gpu):
         # Save any model in cpu mode so it work on all platform
         icarl_copy = icarl_copy.cpu()
-    torch.save(icarl_copy, work_path + '/model{}'.format(iter_group))
+    torch.save(icarl_copy, work_path + '/model_{}'.format(iter_group))
     
     # Construct Examplar Set and save it as a dict
     loader = DataLoader(data, batch_size = batch_size, shuffle = True)
@@ -128,9 +128,12 @@ for iter_group in range(1): #nb_group
     with open(protoset_name, 'wb') as f:
         pickle.dump(protoset, f)
         f.close()
-    
+    print('Complete protoset')
+    print('Testing')
     testset = utils_data.MyDataset(work_path, 0, 2)
     testloader = DataLoader(testset, batch_size = batch_size, shuffle = False)
     icarl.feature_extract(testloader, test_path, iter_group)
+    icarl.classify(protoset, test_path, iter_group)
+    print('Complete test')
     icarl.update_known(iter_group, mixing)
 log.close()
