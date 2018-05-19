@@ -231,6 +231,7 @@ class iCaRL(torch.nn.Module):
         for cl in new_cl:
             mean = torch.mean(feature_mem[cl], 0)
             class_mean[cl] = mean
+            print(class_mean[cl])
         # Choose image as protoset example
         nb_proto = self.nb_proto
         for cl in new_cl:

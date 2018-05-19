@@ -66,7 +66,7 @@ print("Creating training/validation data")
 print('apply training algorithm...')
 
 # Model initialization
-feature_net = utils_resnet.Resnet(pretrained = True)
+feature_net = utils_resnet.Resnet(pretrained = False)
 icarl = utils_icarl.iCaRL(param, feature_net, label_dict)
 loss_fn = torch.nn.BCELoss(size_average = False)
 
@@ -75,7 +75,7 @@ log = open(work_path + '/log.txt', 'ab', 0)
 log.write('epoch time training_loss validation_loss \n'.encode())
 
 # Training algorithm
-for iter_group in range(2): #nb_group
+for iter_group in range(1): #nb_group
     # Training tools
     optimizer = torch.optim.Adam(icarl.parameters(), lr = lr, weight_decay = wght_decay)
     # scheduler = MultiStepLR(optimizer, milestones = lr_milestones, gamma = lr_factor)
@@ -109,8 +109,23 @@ for iter_group in range(2): #nb_group
         print(current_line)
         current_line = str(current_line)[1:-1] + '\n'
         log.write(current_line.encode())
-        print('complete {}% on group {}'.format(
-            (epoch + 1) * 100 / epochs, iter_group))
+        print('complete {}% on group {}'.format((epoch + 1) * 100 / epochs, iter_group))
+        
+        
+#         loader = DataLoader(data, batch_size = batch_size, shuffle = True)
+#         print('Constructing protoset')
+#         protoset = icarl.construct_proto(iter_group, mixing, loader, dict())
+#         protoset_name = work_path + '/protoset_{}'.format(iter_group)
+#         with open(protoset_name, 'wb') as f:
+#             pickle.dump(protoset, f)
+#             f.close()
+#         print('Complete protoset')
+#         print('Testing')
+#         testset = utils_data.MyDataset(work_path, 0, 2)
+#         testloader = DataLoader(testset, batch_size = batch_size, shuffle = False)
+#         icarl.feature_extract(testloader, test_path, iter_group)
+#         icarl.classify(protoset, test_path, iter_group)
+#         print('Complete test')
     
     # Save model every group_iter for babysitting model
     icarl_copy = copy.deepcopy(icarl)
@@ -121,19 +136,20 @@ for iter_group in range(2): #nb_group
     
     # Construct Examplar Set and save it as a dict
     loader = DataLoader(data, batch_size = batch_size, shuffle = True)
-    print('Constructing protoset')
-    protoset = icarl.construct_proto(iter_group, 
-    mixing, loader, protoset)
-    protoset_name = work_path + '/protoset_{}'.format(iter_group)
-    with open(protoset_name, 'wb') as f:
-        pickle.dump(protoset, f)
-        f.close()
-    print('Complete protoset')
-    print('Testing')
-    testset = utils_data.MyDataset(work_path, 0, 2)
-    testloader = DataLoader(testset, batch_size = batch_size, shuffle = False)
-    icarl.feature_extract(testloader, test_path, iter_group)
-    icarl.classify(protoset, test_path, iter_group)
-    print('Complete test')
+    for i in range(5):
+        protoset = dict()
+        print('Constructing protoset')
+        protoset = icarl.construct_proto(iter_group, mixing, loader, protoset)
+        protoset_name = work_path + '/protoset_{}'.format(iter_group)
+        with open(protoset_name + '{}'.format(i), 'wb') as f:
+            pickle.dump(protoset, f)
+            f.close()
+        print('Complete protoset')
+        print('Testing')
+        testset = utils_data.MyDataset(work_path, 0, 2)
+        testloader = DataLoader(testset, batch_size = batch_size, shuffle = False)
+        icarl.feature_extract(testloader, test_path, iter_group)
+        icarl.classify(protoset, test_path, iter_group)
+        print('Complete test')
     icarl.update_known(iter_group, mixing)
 log.close()
