@@ -181,7 +181,7 @@ class iCaRL(torch.nn.Module):
         value, index = torch.topk(distance, nb_proto, largest = False)
         protoset = image_mem[index].clone()
         protoset_orig = image_orig_mem[index].clone()
-        return [protoset, protoset_orig]
+        return [protoset, protoset_orig, class_mean]
     
     def construct_proto(self, iter_group, mixing, loader, protoset):
         # Protoset will be a dictionary of tuples, where keys are class labels, values are tuple of (image, image_orig, feature_mean
@@ -231,7 +231,6 @@ class iCaRL(torch.nn.Module):
         for cl in new_cl:
             mean = torch.mean(feature_mem[cl], 0)
             class_mean[cl] = mean
-            print(class_mean[cl])
         # Choose image as protoset example
         nb_proto = self.nb_proto
         for cl in new_cl:
