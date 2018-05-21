@@ -122,7 +122,6 @@ class iCaRL(torch.nn.Module):
             y_pred = y_pred.int()
             if(y_pred[0] == label[index]):
                 count_true += 1
-        
         print('Accuracy: ',count_true / count_all)
             
 
@@ -172,7 +171,7 @@ class iCaRL(torch.nn.Module):
             self.unknown[known_cl] = 0
     
     # Pick up top-nb_proto images as example of typical class
-    def choose_top(self, nb_proto, feature_mem, 
+    def choose_top_(self, nb_proto, feature_mem, 
     image_mem, image_orig_mem, class_mean):
         assert feature_mem.shape[0] == image_mem.shape[0]
         distance = feature_mem - class_mean
@@ -183,6 +182,26 @@ class iCaRL(torch.nn.Module):
         protoset_orig = image_orig_mem[index].clone()
         return [protoset, protoset_orig, class_mean]
     
+    def choose_top(self, nb_proto, feature_mem, image_mem, image_orig_mem, class_mean):
+        assert feature_mem.shape[0] == image_mem.shape[0]
+        visited = torch.zeros(feature_mem.shape[0], dtype = torch.uint8)
+        tot = torch.zeros(feature_mem.shape[1])
+        protoset_index = []
+        for i in range(nb_proto):
+            distance = torch.tensor(float('inf'))
+            p = -1
+            for item in range(feature_mem.shape[0]):
+                if(visited[item] != 0):
+                    avg = (tot + feature_mem[i]) / (i + 1)
+                    distance_temp = torch.norm(class_mean - avg)
+                    if(distance_temp < distance):
+                        p = i
+            protoset_index.append(p)
+        index = torch.tensor(protoset_index)
+        protoset = image_mem[index].clone()
+        protoset_orig = image_orig_mem[index].clone()
+        return [protoset, protoset_orig, class_mean]
+               
     def construct_proto(self, iter_group, mixing, loader, protoset):
         # Protoset will be a dictionary of tuples, where keys are class labels, values are tuple of (image, image_orig, feature_mean
 
@@ -242,3 +261,4 @@ class iCaRL(torch.nn.Module):
             protoset[cl][1] = protoset[cl][1].numpy().astype(np.uint8)
             protoset[cl] = tuple(protoset[cl])
         return protoset
+    
