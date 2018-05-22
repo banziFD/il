@@ -19,7 +19,7 @@ class Resnet(torch.nn.Module):
         # output feature shape: (n, 512, 1, 1) / (n, 512)
         feature = self.resnet(x)
         feature = feature.view(feature.shape[0], -1)
-        # l2 normalize feature
-        norm = torch.norm(feature, 2, 1, keepdim = True)
-        feature = feature / norm
+#         # l2 normalize feature
+#         norm = torch.norm(feature, 2, 1, keepdim = True)
+#         feature = feature / norm
         return feature

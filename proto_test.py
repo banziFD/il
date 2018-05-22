@@ -16,11 +16,11 @@ nb_val = 20                        # Validation sample per class
 nb_cl = 2                          # Classes per group
 nb_group = 5                       # Number of groups
 nb_proto = 20                      # Number of prototypes per class
-epochs = 1                        # Total number of epochs
+epochs = 3                        # Total number of epochs
 lr = 0.001                         # Initial learning rate
 lr_milestones = [4,8,12,16,20]   # Epochs where learning rate gets decreased
 lr_factor = 0.05                   # Learning rate decrease factor
-gpu = False                        # Use gpu for training
+gpu = True                        # Use gpu for training
 wght_decay = 0.00001               # Weight Decay
 param = {
     'batch_size': batch_size,           
@@ -39,14 +39,14 @@ param = {
 
 ######### Paths  ##########
 # Working space
-dataset_path = "d:/dataset/cifar-10-python"
-testset_path = 'd:/ilte'
-work_path = 'd:/ilex'
+# dataset_path = "d:/dataset/cifar-10-python"
+# testset_path = 'd:/ilte'
+# work_path = 'd:/ilex'
 # dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-batches-py"
 # work_path = '/home/spyisflying/ilex'
-# dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-python"
-# work_path = '/home/spyisflying/ilex'
-# test_path = '/home/spyisflying/ilte'
+dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-python"
+work_path = '/home/spyisflying/ilex'
+test_path = '/home/spyisflying/ilte'
 ###########################
 
 # Read label and random mixing
@@ -68,6 +68,8 @@ print('apply training algorithm...')
 # Model initialization
 feature_net = utils_resnet.Resnet(pretrained = True)
 icarl = utils_icarl.iCaRL(param, feature_net, label_dict)
+if(gpu):
+    icarl = icarl.cuda()
 loss_fn = torch.nn.BCELoss(size_average = False)
 
 # Recording traing process in log file
@@ -101,7 +103,7 @@ for iter_group in range(1): #nb_group
         start = time.time()
         # Train
         error_train, error_val = 0, 0
-        # error_train = utils_icarl.train(icarl, icarl_pre, optimizer, loss_fn, loader)
+        error_train = utils_icarl.train(icarl, icarl_pre, optimizer, loss_fn, loader)
         # Validate
         #error_val = utils_icarl.val(icarl, loss_fn, loader_val)
         # Print monitor info
@@ -120,20 +122,20 @@ for iter_group in range(1): #nb_group
     
     # Construct Examplar Set and save it as a dict
     loader = DataLoader(data, batch_size = batch_size, shuffle = True)
-    for i in range(5):
+    for i in range(20):
         protoset = dict()
         print('Constructing protoset')
         protoset = icarl.construct_proto(iter_group, mixing, loader, protoset)
-        protoset_name = work_path + '/protoset_{}'.format(iter_group)
-        with open(protoset_name + '{}'.format(i), 'wb') as f:
+        protoset_name = work_path + '/protoset_{}_{}'.format(iter_group, i)
+        with open(protoset_name, 'wb') as f:
             pickle.dump(protoset, f)
             f.close()
-        # print('Complete protoset')
-        # print('Testing')
-        # testset = utils_data.MyDataset(work_path, 0, 2)
-        # testloader = DataLoader(testset, batch_size = batch_size, shuffle = False)
-        # icarl.feature_extract(testloader, test_path, iter_group)
-        # icarl.classify(protoset, test_path, iter_group)
-        # print('Complete test')
+        print('Complete protoset')
+        print('Testing')
+        testset = utils_data.MyDataset(work_path, 0, 2)
+        testloader = DataLoader(testset, batch_size = batch_size, shuffle = False)
+        icarl.feature_extract(testloader, test_path, iter_group)
+        icarl.classify(protoset, test_path, iter_group)
+        print('Complete test')
     icarl.update_known(iter_group, mixing)
 log.close()

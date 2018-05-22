@@ -102,9 +102,7 @@ class iCaRL(torch.nn.Module):
             mean = self.feature_net(x).detach()
             mean = torch.mean(mean, 0)
             class_mean[cl] = mean
-        # normalize class_mean
-        norm = torch.norm(class_mean, 2, 1, keepdim = True)
-        class_mean = class_mean / norm
+        print(torch.norm(class_mean[4]-class_mean[7]))
 
         # load computed feature for test
         feature = torch.load(test_path + '/feature_{}'.format(iter_group))
@@ -172,13 +170,35 @@ class iCaRL(torch.nn.Module):
             self.unknown[known_cl] = 0
     
     # Pick up top-nb_proto images as example of typical class
-    def choose_top(self, nb_proto, feature_mem, 
-    image_mem, image_orig_mem, class_mean):
+    def choose_top_(self, nb_proto, feature_mem, image_mem, image_orig_mem, class_mean):
         assert feature_mem.shape[0] == image_mem.shape[0]
         distance = feature_mem - class_mean
         distance = distance * distance
         distance = torch.sum(distance, 1)
         value, index = torch.topk(distance, nb_proto, largest = False)
+        protoset = image_mem[index].clone()
+        protoset_orig = image_orig_mem[index].clone()
+        return [protoset, protoset_orig, class_mean]
+    
+    def choose_top(self, nb_proto, feature_mem, image_mem, image_orig_mem, class_mean):
+        assert feature_mem.shape[0] == image_mem.shape[0]
+        visited = torch.zeros(feature_mem.shape[0], dtype = torch.uint8)
+        tot = torch.zeros(feature_mem.shape[1])
+        if(self.gpu):
+            tot = tot.cuda()
+        protoset_index = []
+        for i in range(nb_proto):
+            distance = torch.tensor(float('inf'))
+            p = -1
+            for item in range(feature_mem.shape[0]):
+                if(visited[item] != 0):
+                    avg = (tot + feature_mem[i]) / (i + 1)
+                    distance_temp = torch.norm(class_mean - avg)
+                    if(distance_temp < distance):
+                        p = i
+            protoset_index.append(p)
+            tot = tot + feature_mem[p]
+        index = torch.tensor(protoset_index)
         protoset = image_mem[index].clone()
         protoset_orig = image_orig_mem[index].clone()
         return [protoset, protoset_orig, class_mean]
