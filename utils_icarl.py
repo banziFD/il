@@ -120,7 +120,6 @@ class iCaRL(torch.nn.Module):
             y_pred = y_pred.int()
             if(y_pred[0] == label[index]):
                 count_true += 1
-        
         print('Accuracy: ',count_true / count_all)
             
 
@@ -170,7 +169,12 @@ class iCaRL(torch.nn.Module):
             self.unknown[known_cl] = 0
     
     # Pick up top-nb_proto images as example of typical class
+<<<<<<< HEAD
     def choose_top_(self, nb_proto, feature_mem, image_mem, image_orig_mem, class_mean):
+=======
+    def choose_top_(self, nb_proto, feature_mem, 
+    image_mem, image_orig_mem, class_mean):
+>>>>>>> 75e846a50e9f9ee1fc716760d20895ff32e0e83d
         assert feature_mem.shape[0] == image_mem.shape[0]
         distance = feature_mem - class_mean
         distance = distance * distance
@@ -184,8 +188,11 @@ class iCaRL(torch.nn.Module):
         assert feature_mem.shape[0] == image_mem.shape[0]
         visited = torch.zeros(feature_mem.shape[0], dtype = torch.uint8)
         tot = torch.zeros(feature_mem.shape[1])
+<<<<<<< HEAD
         if(self.gpu):
             tot = tot.cuda()
+=======
+>>>>>>> 75e846a50e9f9ee1fc716760d20895ff32e0e83d
         protoset_index = []
         for i in range(nb_proto):
             distance = torch.tensor(float('inf'))
@@ -197,12 +204,19 @@ class iCaRL(torch.nn.Module):
                     if(distance_temp < distance):
                         p = i
             protoset_index.append(p)
+<<<<<<< HEAD
             tot = tot + feature_mem[p]
+=======
+>>>>>>> 75e846a50e9f9ee1fc716760d20895ff32e0e83d
         index = torch.tensor(protoset_index)
         protoset = image_mem[index].clone()
         protoset_orig = image_orig_mem[index].clone()
         return [protoset, protoset_orig, class_mean]
+<<<<<<< HEAD
     
+=======
+               
+>>>>>>> 75e846a50e9f9ee1fc716760d20895ff32e0e83d
     def construct_proto(self, iter_group, mixing, loader, protoset):
         # Protoset will be a dictionary of tuples, where keys are class labels, values are tuple of (image, image_orig, feature_mean
 
@@ -262,3 +276,4 @@ class iCaRL(torch.nn.Module):
             protoset[cl][1] = protoset[cl][1].numpy().astype(np.uint8)
             protoset[cl] = tuple(protoset[cl])
         return protoset
+    

@@ -127,7 +127,11 @@ for iter_group in range(1): #nb_group
         print('Constructing protoset')
         protoset = icarl.construct_proto(iter_group, mixing, loader, protoset)
         protoset_name = work_path + '/protoset_{}_{}'.format(iter_group, i)
+<<<<<<< HEAD
         with open(protoset_name, 'wb') as f:
+=======
+        with open(protoset_name + '{}'.format(i), 'wb') as f:
+>>>>>>> 75e846a50e9f9ee1fc716760d20895ff32e0e83d
             pickle.dump(protoset, f)
             f.close()
         print('Complete protoset')
