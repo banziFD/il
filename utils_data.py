@@ -69,7 +69,7 @@ def prepare_files(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val):
     for i in range(len(mixing)):
         filename = work_path + '/group_{}'.format(i)
         target_class = mixing[i]
-        current = cifar_unpickle(work_path + '/test_batch')
+        current = cifar_unpickle(dataset_path + '/test_batch')
         current_labels = current[b'labels']
         current_images = current[b'data']
         labels_test = []
@@ -77,7 +77,7 @@ def prepare_files(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val):
         for index in range(len(current_labels)):
             if current_labels[index] in target_class:
                 labels_test.append(current_labels[index])
-                images_test.append(current_images[inedx])
+                images_test.append(current_images[index])
         labels_test, iamges_test = prepare_format(labels, images, nb_group, nb_cl)
         np.save(filename + 'label_test', labels_test)
         np.save(filename + 'image_test', iamges_test)
