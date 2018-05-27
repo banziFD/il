@@ -49,13 +49,13 @@ def set_path():
     dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-python"
     work_path = '/home/spyisflying/ilex'
     ###########################
-    path = (dataset_path, work_path)
+    path = {'dataset_path': dataset_path, 'work_path': work_path}
     return path
 
 def set_data(param, path):
     # Read label and random mixing
-    label_name, label_dict = utils_data.parse_meta(path[dataset_path])
-    mixing = utils_data.generate_mixing(param[nb_group], param[nb_cl])
+    label_name, label_dict = utils_data.parse_meta(path['dataset_path'])
+    mixing = utils_data.generate_mixing(param['nb_group'], param['nb_cl'])
     # fix mixing for testing
     mixing = [(4, 7), (8, 5), (6, 2), (1, 3), (9, 0)] 
     print('Mixed class sequence: ')
@@ -64,12 +64,9 @@ def set_data(param, path):
     print("Creating training/validation data")
     # run once for specific mixing
     # utils_data.prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val)
-    return mixing
+    return label_dict, mixing
 
-def train_model(param, path):
-    param = set_param()
-    path = set_path()
-    mixing = set_data(param, path)
+def train_model(param, path, mixing):
     ### Start of the main algorithm ###
     print('apply training algorithm...')
     # Model initialization
@@ -77,13 +74,13 @@ def train_model(param, path):
     loss_fn = torch.nn.BCELoss(size_average = False)
 
     # Recording traing process in log file
-    log = open(work_path + '/log.txt', 'ab', 0)
+    log = open(path['work_path'] + '/log.txt', 'ab', 0)
     log.write('epoch time training_loss validation_loss \n'.encode())
 
     # Training algorithm
     for iter_group in range(1): #nb_group
         # Training tools
-        optimizer = torch.optim.Adam(icarl.parameters(), lr = lr, weight_decay = wght_decay)
+        optimizer = torch.optim.Adam(icarl.parameters(), lr = param['lr'], weight_decay = param['wght_decay'])
         # scheduler = MultiStepLR(optimizer, milestones = lr_milestones, gamma = lr_factor)
         
         # Loading protoset
@@ -98,11 +95,11 @@ def train_model(param, path):
                 f.close()
             icarl_pre = torch.load(icarl_pre_name)
         # Loading trainging data by group
-        data = utils_data.MyDataset(param['work_path'], iter_group, 0, protoset)
+        data = utils_data.MyDataset(path['work_path'], iter_group, 0, protoset)
         loader = DataLoader(data, batch_size = param['batch_size'], shuffle = True)
         # Loading validation data by group
-        data_val = utils_data.MyDataset(param['work_path'], iter_group, 1)
-        loader_val = DataLoader(data_val, batch_size = parm['batch_size'], shuffle = True)
+        data_val = utils_data.MyDataset(path['work_path'], iter_group, 1)
+        loader_val = DataLoader(data_val, batch_size = param['batch_size'], shuffle = True)
         for epoch in range(param['epochs']):
             start = time.time()
             # Train
@@ -115,13 +112,12 @@ def train_model(param, path):
             print(current_line)
             current_line = str(current_line)[1:-1] + '\n'
             log.write(current_line.encode())
-            print('complete {}% on group {}'.format((epoch + 1) * 100 / epochs, iter_group))
-        
-        # Save model every group_iter for babysitting model
-        icarl_copy = copy.deepcopy(icarl)
-        torch.save(icarl_copy, path['work_path'] + '/model_{}_{}'.format(iter_group, epoch))
+            print('complete {}% on group {}'.format((epoch + 1) * 100 / param['epochs'], iter_group))
+            # Save model every group_iter for babysitting model
+            icarl_copy = copy.deepcopy(icarl)
+            torch.save(icarl_copy, path['work_path'] + '/model_{}_{}'.format(iter_group, epoch))
 
-def proto_test(icarl, protoset = dict(), iter_group, mixing, loader):
+def proto_test(icarl, protoset, iter_group, mixing, loader):
     print('Constructing protoset')
     protoset = icarl.construct_proto(iter_group, mixing, loader, protoset)
     print('Complete protoset')
@@ -129,7 +125,7 @@ def proto_test(icarl, protoset = dict(), iter_group, mixing, loader):
     print('Testing')
     testset = utils_data.MyDataset(path['work_path'], 0, 2)
     testloader = DataLoader(testset, batch_size = param['batch_size'], shuffle = False)
-    feature_mem, label_mem = icarl.feature_extract(testloader, iter_group)
+    feature_mem, label_mem = icarl.feature_extract(testloader)
     result = icarl.classify(protoset, feature_mem, label_mem, iter_group)
     print('Complete test')
     return result
@@ -137,21 +133,23 @@ def proto_test(icarl, protoset = dict(), iter_group, mixing, loader):
 if __name__ == '__main__':
     param = set_param()
     path = set_path()
-    mixing = set_data(param, path)
-    train_model(param, path)
-    data = utils_data.MyDataset(path['work_path'], iter_group, 0, protoset)
-    loader = DataLoader(data, batch_size = param['batch_size'], shuffle = True)
+    label_dict, mixing = set_data(param, path)
+#     train_model(param, path, mixing)
     for iter_group in range(1):
-        result = [[]] * param['epochs']
+        protoset = dict()
+        data = utils_data.MyDataset(path['work_path'], iter_group, 0, protoset)
+        loader = DataLoader(data, batch_size = param['batch_size'], shuffle = True)
+        result_mem = []
         for epoch in range(param['epochs']):
             icarl = torch.load(path['work_path'] + '/model_{}_{}'.format(iter_group, epoch))
+            if(icarl.gpu):
+                icarl = icarl.cuda()
             proto_test(icarl, dict(), iter_group, mixing, loader)
-            protoset = dict()
             current_result = list()
-            for i in range(20):
+            for i in range(2):
                 result = proto_test(icarl, protoset, iter_group, mixing, loader)
                 current_result.append(result)
-            result[epoch] = current_result
+            result_mem.append(current_result)
         with open(path['work_path'] + '/result_{}'.format(iter_group), 'wb') as f:
             pickle.dump(result, f)
             f.close()

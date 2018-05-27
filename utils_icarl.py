@@ -69,12 +69,12 @@ def val(icarl, icarl_pre, loss_fn, loader_val):
     known = icarl.known.clone()
     unknown = icarl.unknown.clone()
     error_val = 0
-    for step, (x, y, x_orig, y_sca) in enumerate(loader):
+    for step, (x, y, x_orig, y_sca) in enumerate(loader_val):
         x.requires_grad = False
         y.requires_grad = False
         # sperate known classes with unknown classes
         known_count = int(torch.sum(y * known,).item())
-        unknown_count = x.shape[0] - known(count)
+        unknown_count = x.shape[0] - known_count
         x_known = torch.zeros(known_count, 3, 224, 224)
         y_known = torch.zeros(known_count, 10)
         x_unknown = torch.zeros(unknown_count, 3, 224, 224)
@@ -133,7 +133,7 @@ class iCaRL(torch.nn.Module):
 
         self.known = torch.zeros(self.total_cl, requires_grad = False)
         self.unknown = torch.ones(self.total_cl, requires_grad = False)
-        self.feature_net = utils_resnet().Resnet(pretrained = True)
+        self.feature_net = utils_resnet.Resnet(pretrained = True)
         self.linear = torch.nn.Linear(512, self.total_cl)
         self.sigmoid = torch.nn.Sigmoid()
     
@@ -163,7 +163,7 @@ class iCaRL(torch.nn.Module):
         
         assert feature_mem.shape[0] == label_mem.shape[0]
         count_true = 0
-        count_all = feature.shape[0]
+        count_all = feature_mem.shape[0]
         for index in range(count_all):
             current_f = feature_mem[index]
             current_l = label_mem[index]
@@ -177,7 +177,7 @@ class iCaRL(torch.nn.Module):
         print('Accuracy: ',count_true / count_all)
         return count_true / count_all
             
-    def feature_extract(self, loader, iter_group):
+    def feature_extract(self, loader):
         # nearest-mean-of-examplars classification based on
         # feature map extracted by resnet
         feature_net = self.feature_net
@@ -212,6 +212,7 @@ class iCaRL(torch.nn.Module):
         if(self.gpu):
             feature_mem = feature_mem.cpu()
             label_mem = label_mem.cpu()
+        return feature_mem, label_mem
 
     def update_known(self, iter_group, mixing):
         for known_cl in mixing[iter_group]:
