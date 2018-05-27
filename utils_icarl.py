@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+import utils_resnet
 
 def train(icarl, icarl_pre, optimizer, loss_fn, loader):
     # known_mask & unknown_mask
@@ -16,7 +17,6 @@ def train(icarl, icarl_pre, optimizer, loss_fn, loader):
         y_known = torch.zeros(known_count, 10)
         x_unknown = torch.zeros(unknown_count, 3, 224, 224)
         y_unknown = torch.zeros(unknown_count, 10)
-
         i, j = 0, 0
         for k in range(y.shape[0]):
             if(known[y_sca[k]] == 1):
@@ -27,8 +27,7 @@ def train(icarl, icarl_pre, optimizer, loss_fn, loader):
                 x_unknown[j] = x[k]
                 y_unknown[j] = y[k]
                 j += 1
-        
-        
+
         # Load data to gpu memory if cuda is availiable
         if(icarl.gpu):
             icarl = icarl.cuda()
@@ -60,13 +59,71 @@ def train(icarl, icarl_pre, optimizer, loss_fn, loader):
         error_train = error_train + loss.data.item()
         loss.backward()
         optimizer.step()
+    if(icarl.gpu):     
+        # Save any model in cpu mode so it work cross all platform
+        icarl = icarl.cpu()
     return error_train
         
-def val(icarl, loss_fn, loader_val):
-    pass
+def val(icarl, icarl_pre, loss_fn, loader_val):
+    # known_mask & unknown_mask
+    known = icarl.known.clone()
+    unknown = icarl.unknown.clone()
+    error_val = 0
+    for step, (x, y, x_orig, y_sca) in enumerate(loader):
+        x.requires_grad = False
+        y.requires_grad = False
+        # sperate known classes with unknown classes
+        known_count = int(torch.sum(y * known,).item())
+        unknown_count = x.shape[0] - known(count)
+        x_known = torch.zeros(known_count, 3, 224, 224)
+        y_known = torch.zeros(known_count, 10)
+        x_unknown = torch.zeros(unknown_count, 3, 224, 224)
+        y_unknown = torch.zeros(unknown_count, 10)
+        i, j = 0, 0
+        for k in range(y.shape[0]):
+            if(known[y_sca[k]] == 1):
+                x_known[i] = x[k]
+                y_known[i] = y[k]
+                i += 1
+            else:
+                x_unknown[j] = x[k]
+                y_unknown[j] = y[k]
+                j += 1
+        
+        # Load data to gpu memory if cuda is availiable
+        if(icarl.gpu):
+            icarl = icarl.cuda()
+            if(icarl_pre != None):
+                icarl_pre = icarl_pre.cuda()
+            loss_fn = loss_fn.cuda()
+            x_known = x_known.cuda()
+            y_known = y_known.cuda()
+            x_unknown = x_unknown.cuda()
+            y_unknown = y_unknown.cuda()
+        # Forward prop, modified x means we reorder original images
+        # by (known, unknown)
+        x_modify = torch.cat((x_known, x_unknown), 0)
+        y_pred = icarl(x_modify)
+
+        ### loss function ###
+        # classification term + distillation term
+        if(icarl_pre != None and known_count != 0):
+            y_diss = icarl_pre(x_known)
+            y_diss = y_diss.detach()
+            y_class = y_unknown
+            y_target = torch.cat((y_diss, y_class), 0)
+        else:
+            y_target = y_unknown
+        loss = loss_fn(y_pred, y_target)
+        error_val = error_val + loss.data.item()
+    if(icarl.gpu):
+        icarl = icarl.cpu()
+    return error_val    
+        
+        
 
 class iCaRL(torch.nn.Module):
-    def __init__(self, param, feature_net, label_dict):
+    def __init__(self, param, label_dict):
         super(iCaRL, self).__init__()
         self.total_cl = param['nb_cl'] * param['nb_group']
         self.label_dict = label_dict
@@ -76,7 +133,7 @@ class iCaRL(torch.nn.Module):
 
         self.known = torch.zeros(self.total_cl, requires_grad = False)
         self.unknown = torch.ones(self.total_cl, requires_grad = False)
-        self.feature_net = feature_net
+        self.feature_net = utils_resnet().Resnet(pretrained = True)
         self.linear = torch.nn.Linear(512, self.total_cl)
         self.sigmoid = torch.nn.Sigmoid()
     
@@ -89,7 +146,7 @@ class iCaRL(torch.nn.Module):
         y = self.sigmoid(y)
         return y
 
-    def classify(self, protoset, test_path, iter_group):
+    def classify(self, protoset, feature_mem, label_mem, iter_group):
         known_cl = protoset.keys()
         class_mean = torch.zeros(self.total_cl, 512, requires_grad = False)
         # compute current mean feature for each class
@@ -103,27 +160,24 @@ class iCaRL(torch.nn.Module):
             mean = torch.mean(mean, 0)
             class_mean[cl] = mean
 #             class_mean[cl] = protoset[cl][2]
-           
-        # load computed feature for test
-        feature = torch.load(test_path + '/feature_{}'.format(iter_group))
-        label = torch.load(test_path + '/label_{}'.format(iter_group))
-        assert feature.shape[0] == label.shape[0]
+        
+        assert feature_mem.shape[0] == label_mem.shape[0]
         count_true = 0
         count_all = feature.shape[0]
         for index in range(count_all):
-            current_f = feature[index]
-            current_l = label[index]
+            current_f = feature_mem[index]
+            current_l = label_mem[index]
             distance = class_mean - current_f
             distance = distance * distance
             distance = torch.sum(distance, 1)
             dist, y_pred = torch.topk(distance, 1, largest = False)
             y_pred = y_pred.int()
-            if(y_pred[0] == label[index]):
+            if(y_pred[0] == label_mem[index]):
                 count_true += 1
         print('Accuracy: ',count_true / count_all)
+        return count_true / count_all
             
-
-    def feature_extract(self, loader, test_path, iter_group):
+    def feature_extract(self, loader, iter_group):
         # nearest-mean-of-examplars classification based on
         # feature map extracted by resnet
         feature_net = self.feature_net
@@ -158,10 +212,6 @@ class iCaRL(torch.nn.Module):
         if(self.gpu):
             feature_mem = feature_mem.cpu()
             label_mem = label_mem.cpu()
-        
-        # Save data to test_path
-        torch.save(feature_mem, test_path + '/feature_{}'.format(iter_group))
-        torch.save(label_mem, test_path + '/label_{}'.format(iter_group))
 
     def update_known(self, iter_group, mixing):
         for known_cl in mixing[iter_group]:
