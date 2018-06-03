@@ -16,7 +16,7 @@ def set_param():
     nb_cl = 2                          # Classes per group
     nb_group = 5                       # Number of groups
     nb_proto = 20                      # Number of prototypes per class
-    epochs = 3                        # Total number of epochs
+    epochs = 20                        # Total number of epochs
     lr = 0.001                         # Initial learning rate
     lr_milestones = [4,8,12,16,20]   # Epochs where learning rate gets decreased
     lr_factor = 0.05                   # Learning rate decrease factor
@@ -63,7 +63,7 @@ def set_data(param, path):
     ### Preparing the files for the training/validation ###
     print("Creating training/validation data")
     # run once for specific mixing
-    # utils_data.prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val)
+    utils_data.prepare_files_sample(path['dataset_path'], path['work_path'], mixing, param['nb_group'], param['nb_cl'], param['nb_val'])
     return label_dict, mixing
 
 def train_model(param, path, mixing):
@@ -134,7 +134,7 @@ if __name__ == '__main__':
     param = set_param()
     path = set_path()
     label_dict, mixing = set_data(param, path)
-#     train_model(param, path, mixing)
+    train_model(param, path, mixing)
     for iter_group in range(1):
         protoset = dict()
         data = utils_data.MyDataset(path['work_path'], iter_group, 0, protoset)
@@ -144,12 +144,11 @@ if __name__ == '__main__':
             icarl = torch.load(path['work_path'] + '/model_{}_{}'.format(iter_group, epoch))
             if(icarl.gpu):
                 icarl = icarl.cuda()
-            proto_test(icarl, dict(), iter_group, mixing, loader)
             current_result = list()
-            for i in range(2):
+            for i in range(30):
                 result = proto_test(icarl, protoset, iter_group, mixing, loader)
                 current_result.append(result)
             result_mem.append(current_result)
         with open(path['work_path'] + '/result_{}'.format(iter_group), 'wb') as f:
-            pickle.dump(result, f)
+            pickle.dump(result_mem, f)
             f.close()

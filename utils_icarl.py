@@ -133,7 +133,7 @@ class iCaRL(torch.nn.Module):
 
         self.known = torch.zeros(self.total_cl, requires_grad = False)
         self.unknown = torch.ones(self.total_cl, requires_grad = False)
-        self.feature_net = utils_resnet.Resnet(pretrained = True)
+        self.feature_net = utils_resnet.Resnet(pretrained = False)
         self.linear = torch.nn.Linear(512, self.total_cl)
         self.sigmoid = torch.nn.Sigmoid()
     

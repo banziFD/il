@@ -17,7 +17,7 @@ def set_param():
     nb_cl = 2                          # Classes per group
     nb_group = 5                       # Number of groups
     nb_proto = 20                      # Number of prototypes per class
-    epochs = 1                        # Total number of epochs
+    epochs = 10                        # Total number of epochs
     lr = 0.001                         # Initial learning rate
     lr_milestones = [4,8,12,16,20]   # Epochs where learning rate gets decreased
     lr_factor = 0.05                   # Learning rate decrease factor
@@ -51,7 +51,7 @@ def set_path():
     dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-python"
     work_path = '/home/spyisflying/ilex'
     ###########################
-    path = (dataset_path, work_path)
+    path = {'dataset_path': dataset_path, 'work_path': work_path}
     return path
 
 
@@ -67,12 +67,12 @@ def set_data(param, path):
     print("Creating training/validation data")
     # run once for specific mixing
     # utils_data.prepare_files_sample(dataset_path, work_path, mixing, nb_group, nb_cl, nb_val)
-    return mixing
+    return label_dict, mixing
 
 def main():
     param = set_param()
     path = set_path()
-    mixing = set_data(param, path)
+    label_dict, mixing = set_data(param, path)
     ### Start of the main algorithm ###
     print('apply training algorithm...')
     # Model initialization
@@ -80,13 +80,13 @@ def main():
     loss_fn = torch.nn.BCELoss(size_average = False)
 
     # Recording traing process in log file
-    log = open(work_path + '/log.txt', 'ab', 0)
+    log = open(path['work_path'] + '/log.txt', 'ab', 0)
     log.write('epoch time training_loss validation_loss \n'.encode())
 
     # Training algorithm
-    for iter_group in range(1): #nb_group
+    for iter_group in range(2): #nb_group
         # Training tools
-        optimizer = torch.optim.Adam(icarl.parameters(), lr = lr, weight_decay = wght_decay)
+        optimizer = torch.optim.Adam(icarl.parameters(), lr = param['lr'], weight_decay = param['wght_decay'])
         # scheduler = MultiStepLR(optimizer, milestones = lr_milestones, gamma = lr_factor)
         
         # Loading protoset
@@ -94,8 +94,8 @@ def main():
             protoset = dict()
             icarl_pre = None
         else:
-            protoset_name = param['work_path'] + '/protoset_{}'.format(iter_group - 1)
-            icarl_pre_name = param['work_path'] + '/model_{}'.format(iter_group - 1)
+            protoset_name = path['work_path'] + '/protoset_{}'.format(iter_group - 1)
+            icarl_pre_name = path['work_path'] + '/model_{}'.format(iter_group - 1)
             with open(protoset_name, 'rb') as f:
                 protoset = pickle.load(f)
                 f.close()
@@ -104,9 +104,9 @@ def main():
         data = utils_data.MyDataset(path['work_path'], iter_group, 0, protoset)
         loader = DataLoader(data, batch_size = param['batch_size'], shuffle = True)
         # Loading validation data by group
-        data_val = utils_data.MyDataset(work_path, iter_group, 1)
+        data_val = utils_data.MyDataset(path['work_path'], iter_group, 1)
         loader_val = DataLoader(data_val, batch_size = param['batch_size'], shuffle = True)
-        for epoch in range(epochs):
+        for epoch in range(param['epochs']):
             start = time.time()
             # Train
             error_train, error_val = 0, 0
@@ -118,25 +118,25 @@ def main():
             print(current_line)
             current_line = str(current_line)[1:-1] + '\n'
             log.write(current_line.encode())
-            print('complete {}% on group {}'.format((epoch + 1) * 100 / epochs, iter_group))
+            print('complete {}% on group {}'.format((epoch + 1) * 100 / param['epochs'], iter_group))
         
         # Save model every group_iter for babysitting model
-        icarl_copy = copy.deepcopy(icarl)
-        torch.save(icarl_copy, work_path + '/model_{}'.format(iter_group))
-        
+        torch.save(icarl, path['work_path'] + '/model_{}'.format(iter_group))
         # Construct Examplar Set and save it as a dict
         loader = DataLoader(data, batch_size = param['batch_size'], shuffle = True)
         print('Constructing protoset')
+        if(icarl.gpu):
+            icarl = icarl.cuda()
         protoset = icarl.construct_proto(iter_group, mixing, loader, protoset)
-        protoset_name = param['work_path'] + '/protoset_{}'.format(iter_group)            
-        with open(protoset_name + '{}'.format(i), 'wb') as f:
+        protoset_name = path['work_path'] + '/protoset_{}'.format(iter_group)            
+        with open(protoset_name, 'wb') as f:
             pickle.dump(protoset, f)
             f.close()
         print('Complete protoset')
         print('Testing')
         testset = utils_data.MyDataset(path['work_path'], 0, 2)
-        testloader = DataLoader(testset, batch_size = batch_size, shuffle = False)
-        feature_mem, label_mem = icarl.feature_extract(testloader, iter_group)
+        testloader = DataLoader(testset, batch_size = param['batch_size'], shuffle = False)
+        feature_mem, label_mem = icarl.feature_extract(testloader)
         icarl.classify(protoset, feature_mem, label_mem, iter_group)
         print('Complete test')
         icarl.update_known(iter_group, mixing)
