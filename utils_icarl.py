@@ -133,7 +133,7 @@ class iCaRL(torch.nn.Module):
 
         self.known = torch.zeros(self.total_cl, requires_grad = False)
         self.unknown = torch.ones(self.total_cl, requires_grad = False)
-        self.feature_net = utils_resnet.Resnet(pretrained = False)
+        self.feature_net = utils_resnet.Resnet(pretrained = True)
         self.linear = torch.nn.Linear(512, self.total_cl)
         self.sigmoid = torch.nn.Sigmoid()
     
@@ -249,6 +249,7 @@ class iCaRL(torch.nn.Module):
                     distance_temp = torch.norm(class_mean - avg)
                     if(distance_temp < distance):
                         p = item
+                        distance = distance_temp
             protoset_index.append(p)
             visited[p] = 1
             tot = tot + feature_mem[p]

@@ -3212,3 +3212,5430 @@ Complete protoset
 Testing
 Accuracy:  0.92
 Complete test
+Mixed class sequence: 
+[(4, 7), (8, 5), (6, 2), (1, 3), (9, 0)]
+Creating training/validation data
+apply training algorithm...
+[0, 8.655055284500122, 2.9383534463246663, 0.3634164810180664]
+complete 20.0% on group 0
+[1, 4.615381479263306, 0.3896909046173096, 0.47367143630981445]
+complete 40.0% on group 0
+[2, 4.588463544845581, 0.15711282233397167, 0.06109966635704041]
+complete 60.0% on group 0
+[3, 4.590226411819458, 0.08681255459785461, 0.03725475072860718]
+complete 80.0% on group 0
+[4, 4.5975494384765625, 0.06277172247568766, 0.06050984859466553]
+complete 100.0% on group 0
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.116
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.499
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.3515
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Traceback (most recent call last):
+  File "proto_test.py", line 149, in <module>
+    result = proto_test(icarl, protoset, iter_group, mixing, loader)
+  File "proto_test.py", line 128, in proto_test
+    feature_mem, label_mem = icarl.feature_extract(testloader)
+  File "/home/spyisflying/git/il/utils_icarl.py", line 196, in feature_extract
+    for step, (x, y, x_orig, y_sca) in enumerate(loader):
+  File "/home/spyisflying/miniconda3/envs/torch/lib/python3.6/site-packages/torch/utils/data/dataloader.py", line 264, in __next__
+    batch = self.collate_fn([self.dataset[i] for i in indices])
+  File "/home/spyisflying/miniconda3/envs/torch/lib/python3.6/site-packages/torch/utils/data/dataloader.py", line 264, in <listcomp>
+    batch = self.collate_fn([self.dataset[i] for i in indices])
+  File "/home/spyisflying/git/il/utils_data.py", line 189, in __getitem__
+    image = Image.fromarray(image).resize((224, 224), Image.ANTIALIAS)
+  File "/home/spyisflying/miniconda3/envs/torch/lib/python3.6/site-packages/PIL/Image.py", line 1749, in resize
+    return self._new(self.im.resize(size, resample, box))
+KeyboardInterrupt
+Mixed class sequence: 
+[(4, 7), (8, 5), (6, 2), (1, 3), (9, 0)]
+Creating training/validation data
+apply training algorithm...
+Traceback (most recent call last):
+  File "proto_test.py", line 137, in <module>
+    train_model(param, path, mixing)
+  File "proto_test.py", line 107, in train_model
+    error_train = utils_icarl.train(icarl, icarl_pre, optimizer, loss_fn, loader)
+  File "/home/spyisflying/git/il/utils_icarl.py", line 37, in train
+    x_known = x_known.cuda()
+KeyboardInterrupt
+Mixed class sequence: 
+[(4, 7), (8, 5), (6, 2), (1, 3), (9, 0)]
+Creating training/validation data
+apply training algorithm...
+[0, 8.715773582458496, 2.4956478691101074, 1.1965925216674804]
+complete 20.0% on group 0
+Traceback (most recent call last):
+  File "proto_test.py", line 137, in <module>
+    train_model(param, path, mixing)
+  File "proto_test.py", line 107, in train_model
+    error_train = utils_icarl.train(icarl, icarl_pre, optimizer, loss_fn, loader)
+  File "/home/spyisflying/git/il/utils_icarl.py", line 44, in train
+    y_pred = icarl(x_modify)
+  File "/home/spyisflying/miniconda3/envs/torch/lib/python3.6/site-packages/torch/nn/modules/module.py", line 491, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/home/spyisflying/git/il/utils_icarl.py", line 142, in forward
+    y = self.feature_net(x)
+  File "/home/spyisflying/miniconda3/envs/torch/lib/python3.6/site-packages/torch/nn/modules/module.py", line 491, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/home/spyisflying/git/il/utils_resnet.py", line 20, in forward
+    feature = self.resnet(x)
+  File "/home/spyisflying/miniconda3/envs/torch/lib/python3.6/site-packages/torch/nn/modules/module.py", line 491, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/home/spyisflying/miniconda3/envs/torch/lib/python3.6/site-packages/torch/nn/modules/container.py", line 91, in forward
+    input = module(input)
+  File "/home/spyisflying/miniconda3/envs/torch/lib/python3.6/site-packages/torch/nn/modules/module.py", line 491, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/home/spyisflying/miniconda3/envs/torch/lib/python3.6/site-packages/torch/nn/modules/container.py", line 91, in forward
+    input = module(input)
+  File "/home/spyisflying/miniconda3/envs/torch/lib/python3.6/site-packages/torch/nn/modules/module.py", line 491, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/home/spyisflying/miniconda3/envs/torch/lib/python3.6/site-packages/torchvision-0.2.1-py3.6.egg/torchvision/models/resnet.py", line 43, in forward
+  File "/home/spyisflying/miniconda3/envs/torch/lib/python3.6/site-packages/torch/nn/modules/module.py", line 491, in __call__
+    result = self.forward(*input, **kwargs)
+  File "/home/spyisflying/miniconda3/envs/torch/lib/python3.6/site-packages/torch/nn/modules/activation.py", line 46, in forward
+    return F.threshold(input, self.threshold, self.value, self.inplace)
+  File "/home/spyisflying/miniconda3/envs/torch/lib/python3.6/site-packages/torch/nn/functional.py", line 600, in threshold
+    return torch._C._nn.threshold_(input, threshold, value)
+KeyboardInterrupt
+Mixed class sequence: 
+[(4, 7), (8, 5), (6, 2), (1, 3), (9, 0)]
+Creating training/validation data
+apply training algorithm...
+[0, 8.693540573120117, 2.6527651151021323, 1.0323874473571777]
+complete 20.0% on group 0
+[1, 4.621404409408569, 0.6050964411099752, 0.9470657348632813]
+complete 40.0% on group 0
+[2, 4.584104537963867, 0.2746913353602091, 0.7383677005767822]
+complete 60.0% on group 0
+[3, 4.585279703140259, 0.18527971824010214, 0.9864806175231934]
+complete 80.0% on group 0
+[4, 4.60447883605957, 0.13793875734011332, 0.48671531677246094]
+complete 100.0% on group 0
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.776
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7835
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.717
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.76
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7435
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.785
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7705
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7655
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.815
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.263
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7685
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.727
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.733
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7595
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.2575
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5665
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.3815
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7725
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6725
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.777
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6905
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.781
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.747
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7665
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6235
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.53
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.4865
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6425
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7515
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.784
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6605
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5615
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7605
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.785
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.3275
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8225
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5505
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6685
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.564
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5775
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.552
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6625
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.759
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.786
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.806
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.795
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7905
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.527
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.802
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.549
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7265
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.564
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.4525
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7425
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.536
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.822
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8085
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.4965
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.398
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.787
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7555
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.802
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.808
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8075
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6745
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6185
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.682
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.795
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6605
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.458
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7215
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8715
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.783
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.489
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8265
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7665
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8035
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5725
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8515
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.855
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.782
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.843
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8125
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7965
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8745
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.671
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.758
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6995
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.748
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.3365
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.727
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8305
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.1965
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.831
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7865
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7045
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8255
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.864
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.126
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5635
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.81
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7845
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.745
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.4735
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.817
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.437
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8245
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8435
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5815
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.817
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8955
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8015
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.801
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.779
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8205
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7745
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.763
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.793
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.831
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.861
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.802
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6735
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7105
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.784
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.801
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8125
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8205
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8335
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.818
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.745
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7335
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.806
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8105
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7825
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.803
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8165
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.817
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.806
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.799
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8515
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.829
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5845
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8165
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8205
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.789
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.788
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.818
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.82
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8565
+Complete test
+Mixed class sequence: 
+[(4, 7), (8, 5), (6, 2), (1, 3), (9, 0)]
+Creating training/validation data
+apply training algorithm...
+[0, 8.683719873428345, 2.7816871213912964, 0.8411028861999512]
+complete 3.3333333333333335% on group 0
+[1, 4.592019557952881, 0.44118265151977537, 0.4267448902130127]
+complete 6.666666666666667% on group 0
+[2, 4.59516716003418, 0.1743626070022583, 0.8493246078491211]
+complete 10.0% on group 0
+[3, 4.598185300827026, 0.13929322759310406, 0.374906587600708]
+complete 13.333333333333334% on group 0
+[4, 4.60965633392334, 0.0997543317079544, 0.28300435543060304]
+complete 16.666666666666668% on group 0
+[5, 4.605383634567261, 0.07924839556217193, 0.6901370525360108]
+complete 20.0% on group 0
+[6, 4.603118419647217, 0.03506769508123398, 0.38924269676208495]
+complete 23.333333333333332% on group 0
+[7, 4.592143535614014, 0.016317338148752848, 0.3876443386077881]
+complete 26.666666666666668% on group 0
+[8, 4.604995250701904, 0.01845912570754687, 0.550061845779419]
+complete 30.0% on group 0
+[9, 4.603775262832642, 0.019920854717493056, 0.5924376964569091]
+complete 33.333333333333336% on group 0
+[10, 4.610542297363281, 0.024506766224900882, 0.5137089729309082]
+complete 36.666666666666664% on group 0
+[11, 4.60340690612793, 0.051128342151641845, 1.042780303955078]
+complete 40.0% on group 0
+[12, 4.6131367683410645, 0.09737428406874339, 0.596376371383667]
+complete 43.333333333333336% on group 0
+[13, 4.609907627105713, 0.11793832023938497, 0.8617073059082031]
+complete 46.666666666666664% on group 0
+[14, 4.612165212631226, 0.11425374607245127, 0.40799312591552733]
+complete 50.0% on group 0
+[15, 4.6025002002716064, 0.1313222352663676, 0.8046435356140137]
+complete 53.333333333333336% on group 0
+[16, 4.607463836669922, 0.06691712737083436, 0.4076828479766846]
+complete 56.666666666666664% on group 0
+[17, 4.576369524002075, 0.05859241058429082, 0.21692354679107667]
+complete 60.0% on group 0
+[18, 4.5900719165802, 0.05637398093938827, 0.48095245361328126]
+complete 63.333333333333336% on group 0
+[19, 4.596903562545776, 0.026673608844478926, 0.2450791358947754]
+complete 66.66666666666667% on group 0
+[20, 4.583480358123779, 0.012942791134119034, 0.03904821872711182]
+complete 70.0% on group 0
+[21, 4.588077545166016, 0.015957886278629305, 0.18084748983383178]
+complete 73.33333333333333% on group 0
+[22, 4.607211112976074, 0.006535565244654815, 0.41268186569213866]
+complete 76.66666666666667% on group 0
+[23, 4.609068155288696, 0.006402733325958252, 0.4151293754577637]
+complete 80.0% on group 0
+[24, 4.5980916023254395, 0.0035792910555998486, 0.39855022430419923]
+complete 83.33333333333333% on group 0
+[25, 4.6017115116119385, 0.003055420940121015, 0.39841933250427247]
+complete 86.66666666666667% on group 0
+[26, 4.617877006530762, 0.0029809886341293653, 0.4131922245025635]
+complete 90.0% on group 0
+[27, 4.589600324630737, 0.002335449904203415, 0.3987706422805786]
+complete 93.33333333333333% on group 0
+[28, 4.597066879272461, 0.0022645234875380994, 0.39024078845977783]
+complete 96.66666666666667% on group 0
+[29, 4.599196672439575, 0.001958258965363105, 0.38405799865722656]
+complete 100.0% on group 0
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7735
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.2255
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7895
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.846
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8285
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7975
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7865
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8125
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6695
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.842
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.231
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.789
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.4675
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.775
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.4815
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.736
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.477
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.821
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.811
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.177
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.736
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.1685
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.557
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.845
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.3985
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8105
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.834
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.791
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.73
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6005
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6275
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7085
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.687
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8595
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8195
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.3525
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.4895
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.802
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.1295
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5635
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.3775
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.793
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.566
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.616
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6675
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.3705
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5235
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.608
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.3225
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6145
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.2875
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.4495
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8235
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.149
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.4955
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6535
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.782
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7545
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.404
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5205
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5085
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.674
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.196
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.736
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.545
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.65
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.625
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7535
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.386
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.28
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.4105
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.1415
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.259
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.2605
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.4955
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.747
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.248
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.313
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.462
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.218
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.2335
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8505
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.145
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.417
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.466
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.14
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.1655
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7435
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.448
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.346
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5165
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5135
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.4755
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.534
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.238
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.4695
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7235
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.818
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6155
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7375
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8695
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8255
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8235
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.751
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.658
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7485
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.321
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.826
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.427
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.695
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6375
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.331
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.715
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7885
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.767
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.606
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8705
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8525
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.775
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7595
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5485
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8775
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8945
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8745
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.882
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.691
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.403
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6835
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.892
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.737
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8685
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.904
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8485
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.863
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8055
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8645
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8885
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8335
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.689
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.832
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.841
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.841
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8235
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6045
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8665
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.761
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7955
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.2305
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6565
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7765
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.722
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.667
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.723
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.494
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.508
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.828
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.1565
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.592
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.546
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.716
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.818
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.16
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.2055
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6225
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.3545
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.163
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.149
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.1275
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.2605
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5935
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.581
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.3825
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.2885
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5215
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.3455
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8395
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.466
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.1575
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.307
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.3765
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8395
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.595
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.472
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.89
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.4405
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8385
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8375
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.889
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8035
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.122
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8435
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.764
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.861
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8795
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.732
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5635
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.433
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.594
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6045
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.754
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9155
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8665
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7775
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.86
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.3625
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.1535
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.835
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8185
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.238
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9145
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.596
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.086
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.385
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.564
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.516
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6845
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8495
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6315
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.18
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6635
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.154
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.371
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.87
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.908
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.3515
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8855
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.845
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8025
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.84
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6335
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8715
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.899
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.834
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.813
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.907
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7035
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.857
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8195
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.405
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.241
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8895
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7665
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.671
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.895
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8315
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8685
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.903
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.4545
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.875
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8455
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.475
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9075
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.913
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.897
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8855
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8815
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.4275
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.782
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5275
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.347
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.915
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.889
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.865
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7135
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.164
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.813
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.869
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8985
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8865
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.903
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.49
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.885
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5465
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8935
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.896
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8935
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8845
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.755
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.895
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.3355
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.557
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.84
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.451
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.87
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.822
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.885
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.901
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.891
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8035
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8785
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.783
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8945
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.874
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8925
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7495
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.893
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.89
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.896
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.583
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.1425
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.105
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8555
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8115
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.864
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.901
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.876
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7845
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.875
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8795
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8785
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8685
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8815
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8975
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.883
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.876
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.898
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.881
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.881
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8655
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7835
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8975
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8695
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.718
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.729
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.876
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.886
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.861
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.884
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8545
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8055
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.903
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.891
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.89
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.203
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.897
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.875
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9015
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8985
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9015
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8475
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8945
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7385
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.464
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.899
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.851
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8775
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.901
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.794
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8765
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.853
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.905
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.892
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.267
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8845
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.643
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9085
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.899
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.822
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.549
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.817
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.782
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8525
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8905
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.292
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.878
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8105
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8945
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.809
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7335
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.824
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.241
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5845
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7185
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5865
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.54
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.275
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6665
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8705
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.88
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8825
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8365
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.864
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.774
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.512
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7185
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8175
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8805
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.81
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8595
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.801
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.839
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.772
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.497
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.722
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.811
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.82
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8585
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8455
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8945
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8405
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8775
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.805
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5065
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.877
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7675
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8505
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7115
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8795
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8895
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8765
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.833
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.878
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.179
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8675
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7745
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.566
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6815
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.1305
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.636
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.869
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7965
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.859
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.874
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8015
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.896
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.85
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.217
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.881
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7995
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.887
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8825
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8495
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.4845
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.35
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8865
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.607
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.889
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8185
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6775
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.2835
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7985
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.2485
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8865
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.858
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7045
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6355
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.906
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8685
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.711
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.804
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.524
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8795
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8385
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8665
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.712
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.869
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.846
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.902
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.815
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5415
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.502
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5225
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.75
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.809
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.873
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.683
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8175
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.819
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8205
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.889
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8355
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8145
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.4935
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.905
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6365
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8245
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8965
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.899
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.859
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.538
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7495
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.666
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.772
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.902
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8785
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.885
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7895
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8235
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8945
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.676
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8825
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8355
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.885
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.876
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.889
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.1805
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5345
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.883
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6805
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.817
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6865
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8885
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8945
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.888
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6335
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.175
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.677
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.796
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.65
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.865
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.766
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.841
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.834
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.726
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.689
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.836
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.813
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.864
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.509
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.73
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8425
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.87
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.52
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8055
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8605
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7475
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8195
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7955
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.883
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.824
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7985
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8625
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8785
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.781
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.753
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.87
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8395
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8735
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.791
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.886
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.213
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.557
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.615
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8835
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5405
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5065
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.877
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7775
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.496
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.519
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8845
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.518
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.88
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7785
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.74
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8865
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.736
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.873
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6475
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8825
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5585
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.867
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5755
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.864
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8385
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.864
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.79
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.899
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7105
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.3075
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.901
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9045
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.846
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.906
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9005
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.345
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.61
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.755
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.69
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8965
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9045
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.885
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.906
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.893
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.881
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8915
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.734
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8785
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.1045
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7285
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.49
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7945
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8435
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6355
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7995
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8475
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.899
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.849
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8915
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8485
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.833
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8925
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.896
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8795
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.884
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7755
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.653
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.897
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7655
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8905
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8935
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.895
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8755
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8805
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.892
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.719
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8325
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.737
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8895
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8865
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8915
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8975
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.895
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.898
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.89
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.86
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8825
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9035
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.4605
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8755
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9045
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8735
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.903
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8995
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.888
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.882
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.866
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7635
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9045
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.897
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9035
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.891
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5355
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8875
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.739
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.792
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.891
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.4835
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.88
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.881
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.815
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7815
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9045
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8795
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.888
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.862
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8695
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.4675
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8955
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8775
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6765
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.894
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.88
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.1455
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6275
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.897
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.85
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5745
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.729
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.843
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7525
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.895
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8585
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8755
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.766
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8225
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.653
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8465
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5895
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.875
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.871
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.827
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6855
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8235
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.876
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.879
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.786
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.869
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.849
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.421
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.822
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8575
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6935
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.884
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.866
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.851
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.873
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.892
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.896
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.704
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8455
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.906
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8065
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.4915
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.903
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.877
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.885
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.861
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9015
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9085
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8975
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.844
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9065
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8345
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.884
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9005
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.898
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.903
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8645
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.831
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.817
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7965
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.765
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8065
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9045
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.762
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8695
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8595
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.886
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8895
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8695
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.854
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.898
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9075
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8675
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.884
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.623
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8945
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.855
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.853
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.734
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9075
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.885
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8545
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.837
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.849
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.877
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.4945
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.3285
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.86
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.846
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9085
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.628
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9065
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7945
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8935
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.906
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.878
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.886
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.881
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.889
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.839
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.836
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8495
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5015
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8685
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8925
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6475
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.182
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9115
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.897
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.906
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8805
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.883
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.902
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.836
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.874
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8475
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.787
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.907
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8795
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.716
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.899
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.89
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8735
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8985
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.911
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.902
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.901
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.82
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.879
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9115
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8935
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.865
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.911
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.911
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9005
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8855
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8505
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8955
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8875
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.894
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.909
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.909
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8785
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.91
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.899
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8845
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8555
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.647
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.871
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8885
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9115
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.875
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.902
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.893
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.874
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.913
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.799
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.849
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.838
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8675
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.877
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8935
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9075
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.907
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.828
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.883
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.916
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.866
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8815
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.3855
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8835
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9095
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.868
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8715
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.6675
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9125
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9095
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.914
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9135
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.868
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7725
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.866
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8545
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.909
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.903
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8215
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.88
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5605
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.7075
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8645
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.893
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8745
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9105
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.882
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9105
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9095
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.856
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.866
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9105
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9085
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.913
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9105
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.881
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.896
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.904
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9085
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.91
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9105
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8575
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8935
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9035
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8785
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8875
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8265
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.894
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.894
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8935
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8965
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8355
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.9155
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.912
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.849
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.886
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8835
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8795
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.5815
+Complete test
+Constructing protoset
+Complete protoset
+Testing
+Accuracy:  0.8825
+Complete test

@@ -15,8 +15,8 @@ def set_param():
     nb_val = 20                        # Validation sample per class
     nb_cl = 2                          # Classes per group
     nb_group = 5                       # Number of groups
-    nb_proto = 20                      # Number of prototypes per class
-    epochs = 20                        # Total number of epochs
+    nb_proto = 30                      # Number of prototypes per class
+    epochs = 30                        # Total number of epochs
     lr = 0.001                         # Initial learning rate
     lr_milestones = [4,8,12,16,20]   # Epochs where learning rate gets decreased
     lr_factor = 0.05                   # Learning rate decrease factor
