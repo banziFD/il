@@ -312,6 +312,7 @@ class iCaRL(torch.nn.Module):
             if(self.gpu):
                 protoset[cl][0] = protoset[cl][0].cpu()
                 protoset[cl][1] = protoset[cl][1].cpu()
+                protoset[cl][2] = protoset[cl][2].cpu()
             protoset[cl][1] = protoset[cl][1].numpy().astype(np.uint8)
             protoset[cl] = tuple(protoset[cl])
         return protoset

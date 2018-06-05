@@ -13,7 +13,6 @@ def show_protoset(protoset, cl):
     imgs = protoset[cl][1]
     imgs = imgs.transpose([0, 2, 3, 1])
     shape = imgs.shape
-    print(shape)
     nb_proto = shape[0]
     x_pix = shape[1]
     y_pix = shape[2]
@@ -28,7 +27,7 @@ def show_protoset(protoset, cl):
         img = imgs[i]
         img = Image.fromarray(img, mode = 'RGB')
         result.paste(img, (x * x_pix, y * y_pix))
-    result.show()
+    return result
 
 if __name__ == '__main__':
     a = np.random.randint(256, size = (11, 3, 32, 32), dtype = 'uint8')

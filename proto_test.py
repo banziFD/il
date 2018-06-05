@@ -121,14 +121,13 @@ def proto_test(icarl, protoset, iter_group, mixing, loader):
     print('Constructing protoset')
     protoset = icarl.construct_proto(iter_group, mixing, loader, protoset)
     print('Complete protoset')
-
     print('Testing')
     testset = utils_data.MyDataset(path['work_path'], 0, 2)
     testloader = DataLoader(testset, batch_size = param['batch_size'], shuffle = False)
     feature_mem, label_mem = icarl.feature_extract(testloader)
     result = icarl.classify(protoset, feature_mem, label_mem, iter_group)
     print('Complete test')
-    return result
+    return result, protoset
 
 if __name__ == '__main__':
     param = set_param()
@@ -140,14 +139,18 @@ if __name__ == '__main__':
         data = utils_data.MyDataset(path['work_path'], iter_group, 0, protoset)
         loader = DataLoader(data, batch_size = param['batch_size'], shuffle = True)
         result_mem = []
-        for epoch in range(param['epochs']):
+        for epoch in range(29, 30): #param['epochs']
             icarl = torch.load(path['work_path'] + '/model_{}_{}'.format(iter_group, epoch))
             if(icarl.gpu):
                 icarl = icarl.cuda()
             current_result = list()
-            for i in range(30):
-                result = proto_test(icarl, protoset, iter_group, mixing, loader)
+            for i in range(3):
+                result, protoset_ = proto_test(icarl, protoset, iter_group, mixing, loader)
                 current_result.append(result)
+                with open(path['work_path'] + '/protoset_0_{}'.format(i), 'wb') as f:
+                    pickle.dump(protoset_, f)
+                    f.close()
+                print('Complete: ', i)
             result_mem.append(current_result)
         with open(path['work_path'] + '/result_{}'.format(iter_group), 'wb') as f:
             pickle.dump(result_mem, f)
