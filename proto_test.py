@@ -16,7 +16,7 @@ def set_param():
     nb_cl = 2                          # Classes per group
     nb_group = 5                       # Number of groups
     nb_proto = 30                      # Number of prototypes per class
-    epochs = 30                        # Total number of epochs
+    epochs = 60                        # Total number of epochs
     lr = 0.001                         # Initial learning rate
     lr_milestones = [4,8,12,16,20]   # Epochs where learning rate gets decreased
     lr_factor = 0.05                   # Learning rate decrease factor
@@ -63,7 +63,7 @@ def set_data(param, path):
     ### Preparing the files for the training/validation ###
     print("Creating training/validation data")
     # run once for specific mixing
-    utils_data.prepare_files_sample(path['dataset_path'], path['work_path'], mixing, param['nb_group'], param['nb_cl'], param['nb_val'])
+#     utils_data.prepare_files_sample(path['dataset_path'], path['work_path'], mixing, param['nb_group'], param['nb_cl'], param['nb_val'])
     return label_dict, mixing
 
 def train_model(param, path, mixing):
@@ -139,15 +139,15 @@ if __name__ == '__main__':
         data = utils_data.MyDataset(path['work_path'], iter_group, 0, protoset)
         loader = DataLoader(data, batch_size = param['batch_size'], shuffle = True)
         result_mem = []
-        for epoch in range(29, 30): #param['epochs']
+        for epoch in range(param['epochs']): #param['epochs']
             icarl = torch.load(path['work_path'] + '/model_{}_{}'.format(iter_group, epoch))
             if(icarl.gpu):
                 icarl = icarl.cuda()
             current_result = list()
-            for i in range(3):
+            for i in range(10):
                 result, protoset_ = proto_test(icarl, protoset, iter_group, mixing, loader)
                 current_result.append(result)
-                with open(path['work_path'] + '/protoset_0_{}'.format(i), 'wb') as f:
+                with open(path['work_path'] + '/protoset_{}_{}'.format(epoch, i), 'wb') as f:
                     pickle.dump(protoset_, f)
                     f.close()
                 print('Complete: ', i)
