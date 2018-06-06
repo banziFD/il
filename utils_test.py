@@ -11,7 +11,6 @@ def show_protoset(protoset, cl):
         print('Not a recognisable class!')
         return
     imgs = protoset[cl][1]
-    imgs = imgs.transpose([0, 2, 3, 1])
     shape = imgs.shape
     nb_proto = shape[0]
     x_pix = shape[1]
