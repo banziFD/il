@@ -279,7 +279,7 @@ class iCaRL(torch.nn.Module):
                     class_count[cl] = 1
         # Pre-allocate memory
         for cl in class_count:
-            feature_mem[cl] = torch.zeros(class_count[cl], 512)
+            feature_mem[cl] = torch.zeros(class_count[cl], 512).double()
             image_mem[cl] = torch.zeros(class_count[cl], 3, 224, 224)
             image_orig_mem[cl] = torch.zeros(class_count[cl], 32, 32, 3)
             if(self.gpu):
