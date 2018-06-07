@@ -139,19 +139,19 @@ if __name__ == '__main__':
         data = utils_data.MyDataset(path['work_path'], iter_group, 0, protoset)
         loader = DataLoader(data, batch_size = param['batch_size'], shuffle = True)
         result_mem = []
-        for epoch in [45, 50, 55, 59]: #param['epochs']
+        for epoch in [59]: #param['epochs']
             start = time.time()
             icarl = torch.load(path['work_path'] + '/model_{}_{}'.format(iter_group, epoch))
             if(icarl.gpu):
                 icarl = icarl.cuda()
             current_result = list()
-            for i in range(30):
+            for i in range(70):
                 result, protoset_ = proto_test(icarl, protoset, iter_group, mixing, loader)
                 current_result.append(result)
-                if((i == 0 or i == 5 or i == 9) and (epoch % 10 == 0)):
-                    with open(path['work_path'] + '/protoset_{}_{}'.format(epoch, i), 'wb') as f:
-                        pickle.dump(protoset_, f)
-                        f.close()
+#                 if((i == 0 or i == 5 or i == 9) and (epoch % 10 == 0)):
+#                     with open(path['work_path'] + '/protoset_{}_{}'.format(epoch, i), 'wb') as f:
+#                         pickle.dump(protoset_, f)
+#                         f.close()
             result_mem.append(current_result)
             print('Complete {} epoch, time: {}'.format(epoch, time.time() - start))
         with open(path['work_path'] + '/result_{}'.format(iter_group), 'wb') as f:

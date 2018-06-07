@@ -234,12 +234,12 @@ class iCaRL(torch.nn.Module):
     def choose_top(self, nb_proto, feature_mem, image_mem, image_orig_mem, class_mean):
         assert feature_mem.shape[0] == image_mem.shape[0]
         visited = torch.zeros(feature_mem.shape[0], dtype = torch.uint8)
-        tot = torch.zeros(feature_mem.shape[1])
+        tot = torch.zeros(feature_mem.shape[1], dtype = torch.float64)
         if(self.gpu):
             tot = tot.cuda()
         protoset_index = []
         for i in range(nb_proto):
-            distance = torch.tensor(float('inf'))
+            distance = torch.tensor(float('inf'), dtype = torch.float64)
             if(self.gpu):
                 distance = distance.cuda()
             p = -1
