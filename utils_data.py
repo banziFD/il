@@ -156,7 +156,7 @@ class MyDataset(torch.utils.data.Dataset):
                     self.labels = np.concatenate((self.labels, proto_labels), 
                     axis = 0)
         if(mode == 1):
-            for i in range(iter_group):
+            for i in range(iter_group + 1):
                 labels = work_path + '/group_{}'.format(iter_group) + 'label_val.npy'
                 images = work_path + '/group_{}'.format(iter_group) + 'image_val.npy'
                 if i == 0:
@@ -164,17 +164,17 @@ class MyDataset(torch.utils.data.Dataset):
                     self.images = np.load(images)
                 else:
                     self.labels = np.concatenate((self.labels, np.load(labels)), axis = 0)
-                    self.images = np.concatenate((self.labels, np.load(images)), axis = 0)
+                    self.images = np.concatenate((self.images, np.load(images)), axis = 0)
         if(mode == 2):
-            for i in range(iter_group):
+            for i in range(iter_group + 1):
                 labels = work_path + '/group_{}'.format(iter_group) + 'label_test.npy'
                 images = work_path + '/group_{}'.format(iter_group) + 'image_test.npy'
                 if i == 0:
-                    self.labels = np.load(self.labels)
-                    self.images = np.load(self.images)
+                    self.labels = np.load(labels)
+                    self.images = np.load(images)
                 else:
                     self.labels = np.concatenate((self.labels, np.load(labels)), axis = 0)
-                    self.images = np.concatenate((self.labels, np.load(images)), axis = 0)
+                    self.images = np.concatenate((self.images, np.load(images)), axis = 0)
 
         if(mode == 3):
             for cl in protoset:

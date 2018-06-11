@@ -173,7 +173,7 @@ class iCaRL(torch.nn.Module):
             y_pred = y_pred.int()
             if(y_pred[0] == label_mem[index]):
                 count_true += 1
-        print('Accuracy: ',count_true / count_all)
+        print('Accuracy: {}, True: {}, Total: {}'.format(count_true / count_all, count_true, count_all))
         return count_true / count_all
             
     def feature_extract(self, loader):

@@ -16,12 +16,12 @@ def set_param():
     nb_val = 20                        # Validation sample per class
     nb_cl = 2                          # Classes per group
     nb_group = 5                       # Number of groups
-    nb_proto = 1                      # Number of prototypes per class
-    epochs = 1                        # Total number of epochs
+    nb_proto = 30                      # Number of prototypes per class
+    epochs = 60                        # Total number of epochs
     lr = 0.001                         # Initial learning rate
     lr_milestones = [4,8,12,16,20]   # Epochs where learning rate gets decreased
     lr_factor = 0.05                   # Learning rate decrease factor
-    gpu = False                        # Use gpu for training
+    gpu = True                        # Use gpu for training
     wght_decay = 0.00001               # Weight Decay
     param = {
         'batch_size': batch_size,           
@@ -43,13 +43,13 @@ def set_param():
 def set_path():
     ######### Paths  ##########
     # Working space
-    dataset_path = "d:/dataset/cifar-10-python"
+#     dataset_path = "d:/dataset/cifar-10-python"
     # testset_path = 'd:/ilte'
-    work_path = 'd:/ilex'
+#     work_path = 'd:/ilex'
     # dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-batches-py"
     # work_path = '/home/spyisflying/ilex'
-    # dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-python"
-    # work_path = '/home/spyisflying/ilex'
+    dataset_path = "/home/spyisflying/dataset/cifar/cifar-10-python"
+    work_path = '/home/spyisflying/ilex'
     ###########################
     path = {'dataset_path': dataset_path, 'work_path': work_path}
     return path
@@ -66,10 +66,10 @@ def set_data(param, path):
     ### Preparing the files for the training/validation ###
     print("Creating training/validation data")
     # run once for specific mixing
-    # utils_data.prepare_files_sample(path['dataset_path'], path['work_path'], mixing, param['nb_group'], param['nb_cl'], param['nb_val'])
+#     utils_data.prepare_files_sample(path['dataset_path'], path['work_path'], mixing, param['nb_group'], param['nb_cl'], param['nb_val'])
     return label_dict, mixing
 
-def train_model(param, path, mixing, label_dict):
+def train_model(param, path, mixing, label_dict, n):
     ### Start of the main algorithm ###
     print('apply training algorithm...')
     # Model initialization
@@ -81,7 +81,7 @@ def train_model(param, path, mixing, label_dict):
     log.write('epoch time training_loss validation_loss \n'.encode())
 
     # Training algorithm
-    for iter_group in range(5): #nb_group
+    for iter_group in range(n): #nb_group
         # Training tools
         optimizer = torch.optim.Adam(icarl.parameters(), lr = param['lr'], weight_decay = param['wght_decay'])
         # scheduler = MultiStepLR(optimizer, milestones = lr_milestones, gamma = lr_factor)    
@@ -90,8 +90,8 @@ def train_model(param, path, mixing, label_dict):
             protoset = dict()
             icarl_pre = None
         else:
-            protoset_name = work_path + '/protoset_{}'.format(iter_group - 1)
-            icarl_pre_name = work_path + '/model_{}'.format(iter_group - 1)
+            protoset_name = path['work_path'] + '/protoset_{}'.format(iter_group - 1)
+            icarl_pre_name = path['work_path'] + '/model_{}'.format(iter_group - 1)
             with open(protoset_name, 'rb') as f:
                 protoset = pickle.load(f)
                 f.close()
@@ -117,6 +117,8 @@ def train_model(param, path, mixing, label_dict):
             print('complete {}% on group {}'.format((epoch + 1) * 100 / param['epochs'], iter_group))
         # Save model every group_iter for babysitting model
         icarl_copy = copy.deepcopy(icarl)
+        if(icarl.gpu):
+            icarl = icarl.cuda()
         protoset = icarl.construct_proto(iter_group, mixing, loader, protoset)
         torch.save(icarl_copy, path['work_path'] + '/model_{}'.format(iter_group))
         protoset_name = path['work_path'] + '/protoset_{}'.format(iter_group)
@@ -124,34 +126,36 @@ def train_model(param, path, mixing, label_dict):
             pickle.dump(protoset, f)
             f.close()
 
-def test(param, path):
+def test(param, path, n):
     result_mem = list()
-    for iter_group in range(5):
+    for iter_group in range(n):
         protoset_name = path['work_path'] + '/protoset_{}'.format(iter_group)
         model_name = path['work_path'] + '/model_{}'.format(iter_group)
         with open(protoset_name, 'rb') as f:
             protoset = pickle.load(f)
             f.close()
         icarl = torch.load(model_name)
+        if(icarl.gpu):
+            icarl = icarl.cuda()
         print('Testing_{}'.format(iter_group))
         testset = utils_data.MyDataset(path['work_path'], iter_group, 2)
         testloader = DataLoader(testset, batch_size = param['batch_size'], shuffle = False)
         current_result = list()
-        for i in range(10):
-            feature_mem, label_mem = icarl.feature_extract(testloader)
-            result = icarl.classify(protoset, feature_mem, label_mem, iter_group)
-            current_result.append(result)
+        feature_mem, label_mem = icarl.feature_extract(testloader)
+        result = icarl.classify(protoset, feature_mem, label_mem, iter_group)
+        current_result.append(result)
         print('Complete test')
         result_mem.append(current_result)
     return result_mem
 
 def main():
+    n = 5
     param = set_param()
     path = set_path()
     label_dict, mixing = set_data(param, path)
-    train_model(param, path, mixing, label_dict)
-    result = test(param, path)
-    with open('result', 'rb') as f:
+    train_model(param, path, mixing, label_dict, n)
+    result = test(param, path, n)
+    with open('result', 'wb') as f:
         pickle.dump(result, f)
         f.close()
         
