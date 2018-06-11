@@ -16,8 +16,8 @@ def set_param():
     nb_val = 20                        # Validation sample per class
     nb_cl = 2                          # Classes per group
     nb_group = 5                       # Number of groups
-    nb_proto = 20                      # Number of prototypes per class
-    epochs = 10                        # Total number of epochs
+    nb_proto = 30                      # Number of prototypes per class
+    epochs = 30                        # Total number of epochs
     lr = 0.001                         # Initial learning rate
     lr_milestones = [4,8,12,16,20]   # Epochs where learning rate gets decreased
     lr_factor = 0.05                   # Learning rate decrease factor
@@ -82,11 +82,11 @@ def main():
     # Recording traing process in log file
     log = open(path['work_path'] + '/log.txt', 'ab', 0)
     log.write('epoch time training_loss validation_loss \n'.encode())
-
+    optimizer = torch.optim.Adam(icarl.parameters(), lr = param['lr'], weight_decay = param['wght_decay'])
     # Training algorithm
-    for iter_group in range(2): #nb_group
+    for iter_group in range(5): #nb_group
         # Training tools
-        optimizer = torch.optim.Adam(icarl.parameters(), lr = param['lr'], weight_decay = param['wght_decay'])
+        
         # scheduler = MultiStepLR(optimizer, milestones = lr_milestones, gamma = lr_factor)
         
         # Loading protoset
@@ -106,7 +106,7 @@ def main():
         # Loading validation data by group
         data_val = utils_data.MyDataset(path['work_path'], iter_group, 1)
         loader_val = DataLoader(data_val, batch_size = param['batch_size'], shuffle = True)
-        for epoch in range(param['epochs']):
+        for epoch in range(param['epochs'] + iter_group * 15):
             start = time.time()
             # Train
             error_train, error_val = 0, 0
