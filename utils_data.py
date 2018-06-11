@@ -150,21 +150,32 @@ class MyDataset(torch.utils.data.Dataset):
             if(any(protoset)):
                 for cl in protoset:
                     proto_labels = np.ones(30, dtype = int) * cl
-                    proto_images = protoset[cl][1]                   
+                    proto_images = protoset[cl][1]             
                     self.images = np.concatenate((self.images, proto_images), 
                     axis = 0)
                     self.labels = np.concatenate((self.labels, proto_labels), 
                     axis = 0)
         if(mode == 1):
-            self.labels = work_path + '/group_{}'.format(iter_group) + 'label_val.npy'
-            self.images = work_path + '/group_{}'.format(iter_group) + 'image_val.npy'
-            self.labels = np.load(self.labels)
-            self.images = np.load(self.images)
+            for i in range(iter_group):
+                labels = work_path + '/group_{}'.format(iter_group) + 'label_val.npy'
+                images = work_path + '/group_{}'.format(iter_group) + 'image_val.npy'
+                if i == 0:
+                    self.labels = np.load(labels)
+                    self.images = np.load(images)
+                else:
+                    self.labels = np.concatenate((self.labels, np.load(labels)), axis = 0)
+                    self.images = np.concatenate((self.labels, np.load(images)), axis = 0)
         if(mode == 2):
-            self.labels = work_path + '/group_{}'.format(iter_group) + 'label_test.npy'
-            self.images = work_path + '/group_{}'.format(iter_group) + 'image_test.npy'
-            self.labels = np.load(self.labels)
-            self.images = np.load(self.images)
+            for i in range(iter_group):
+                labels = work_path + '/group_{}'.format(iter_group) + 'label_test.npy'
+                images = work_path + '/group_{}'.format(iter_group) + 'image_test.npy'
+                if i == 0:
+                    self.labels = np.load(self.labels)
+                    self.images = np.load(self.images)
+                else:
+                    self.labels = np.concatenate((self.labels, np.load(labels)), axis = 0)
+                    self.images = np.concatenate((self.labels, np.load(images)), axis = 0)
+
         if(mode == 3):
             for cl in protoset:
                 proto_labels = np.ones(20) * cl

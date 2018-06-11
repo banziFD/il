@@ -159,7 +159,6 @@ class iCaRL(torch.nn.Module):
             mean = self.feature_net(x).detach()
             mean = torch.mean(mean, 0)
             class_mean[cl] = mean
-#             class_mean[cl] = protoset[cl][2]
         
         assert feature_mem.shape[0] == label_mem.shape[0]
         count_true = 0
